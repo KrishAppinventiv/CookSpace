@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "887902040289",
+    "project_id": "cookspace-74a01",
+    "storage_bucket": "cookspace-74a01.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:887902040289:android:6602a7ad04fff026f287a0",
+        "android_client_info": {
+          "package_name": "com.cookspace"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCJDxE-wA926q1mYvQh7cw4ocVmtdUDKnE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

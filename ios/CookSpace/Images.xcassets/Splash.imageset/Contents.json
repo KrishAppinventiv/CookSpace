@@ -1,0 +1,23 @@
+{
+  "images" : [
+    {
+      "filename" : "vertical-view-orange-bread-slices-egg-yolk-orange-zest-measure-spoon-with-flour-with-rolling-pin-egg-shell-black-background.jpg",
+      "idiom" : "universal",
+      "scale" : "1x"
+    },
+    {
+      "filename" : "vertical-view-orange-bread-slices-egg-yolk-orange-zest-measure-spoon-with-flour-with-rolling-pin-egg-shell-black-background 1.jpg",
+      "idiom" : "universal",
+      "scale" : "2x"
+    },
+    {
+      "filename" : "vertical-view-orange-bread-slices-egg-yolk-orange-zest-measure-spoon-with-flour-with-rolling-pin-egg-shell-black-background 2.jpg",
+      "idiom" : "universal",
+      "scale" : "3x"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}
