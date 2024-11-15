@@ -6,7 +6,12 @@ const ScreenNames = {
   BottomTab: 'BottomTab',
   Tutorial : 'Tutorial',
   Signin: 'SignIn',
-  Signup: 'Signup'
+  Signup: 'Signup',
+  Details:'Details',
+  Search:'Search',
+  Add:'Add',
+  Notify:'Notification',
+  Save:'Save'
 };
 
 export {ScreenNames};

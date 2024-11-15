@@ -28,7 +28,7 @@ const Tutorial = () => {
     <View style={{ flex:1,justifyContent:'flex-end',alignItems:'center',marginBottom:100}}>
       <Text style={{color:'white',fontSize:24,fontWeight:'700',fontFamily:'Georgia'}}>Welcome at CookSpace</Text>
       <Text style={{color:'white',fontSize:15,fontWeight:'400',marginTop:10}}>Simple way to find Tasty Recipe</Text>
-      <TouchableOpacity style={{backgroundColor:'#129575',padding:20,borderRadius:30,paddingHorizontal:40,marginTop:20}} onPress={()=>navigation.navigate(ScreenNames.Signin)}>
+      <TouchableOpacity style={{backgroundColor:'#129575',padding:20,borderRadius:30,paddingHorizontal:40,marginTop:20}} onPress={()=>navigation.navigate(ScreenNames.BottomTab)}>
         <Text style={{fontSize:16,color:'white',fontWeight:'700'}}>Start Cooking</Text>
       </TouchableOpacity>
     </View>

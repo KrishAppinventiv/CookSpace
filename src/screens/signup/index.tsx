@@ -97,7 +97,7 @@ const Signup = () => {
                     email: Email,
                     profilePic: '',
                     createdAt: FieldValue.serverTimestamp(),
-                    preferences: { darkMode: false, language: 'en' }
+                    dateofbirth: ''
                 });
                 console.log('User data saved to Firestore successfully!');
                 navigation.navigate(ScreenNames.Signin); // Navigate after successful sign-up
@@ -118,7 +118,7 @@ const Signup = () => {
                 Alert.alert('An error occurred. Please try again.');
             }
         }
-    };
+    }; 
   return (
     <View style={styles.container}>
       

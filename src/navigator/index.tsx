@@ -13,6 +13,8 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import Tutorial from '../screens/tutorial';
 import Signin from '../screens/signin';
 import Signup from '../screens/signup';
+import Details from '../screens/details';
+import Search from '../screens/search';
 
 
 const Stack: any = createNativeStackNavigator();
@@ -34,8 +36,8 @@ const RootNavigator = () => {
           options={{headerShown: false}}
         />
         <Stack.Screen
-          component={Home}
-          name={ScreenNames.Home}
+          component={BottomTabNavigator}
+          name={ScreenNames.BottomTab}
           options={{headerShown: false}}
         />
         <Stack.Screen
@@ -52,6 +54,16 @@ const RootNavigator = () => {
           <Stack.Screen
           component={Signup}
           name={ScreenNames.Signup}
+          options={{headerShown: false}}
+        />
+         <Stack.Screen
+          component={Details}
+          name={ScreenNames.Details}
+          options={{headerShown: false}}
+        />
+         <Stack.Screen
+          component={Search} 
+          name={ScreenNames.Search}
           options={{headerShown: false}}
         />
       </Stack.Navigator>
