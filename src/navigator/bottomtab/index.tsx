@@ -6,7 +6,7 @@ import Profile from '../../screens/profile';
 import Save from '../../screens/save';
 import Add from '../../screens/add';
 import Notification from '../../screens/notification';
-import {Image, View} from 'react-native';
+import {Image, TouchableOpacity, View} from 'react-native';
 import {Images} from '../../assets';
 
 const Tab = createBottomTabNavigator();
@@ -27,9 +27,11 @@ const BottomTabNavigator = () => {
         name={ScreenNames.Home}
         options={{
           tabBarIcon: ({focused}) => (
+            
             <View style={{marginTop: 10}}>
               <Image source={focused?Images.vector:Images.home} style={{height: 28, width: 28}} resizeMode='contain'/>
             </View>
+           
           ),
         }}
       />
@@ -38,9 +40,11 @@ const BottomTabNavigator = () => {
         name={ScreenNames.Save}
         options={{
           tabBarIcon: ({focused}) => (
+           
             <View style={{marginTop: 10}}>
               <Image source={focused? Images.saveActive:Images.save} style={{height: 28, width: 28}} resizeMode='contain'/>
             </View>
+           
           ),
         }}
       />
@@ -49,6 +53,7 @@ const BottomTabNavigator = () => {
         name={ScreenNames.Add}
         options={{
           tabBarIcon: ({focused}) => (
+            <TouchableOpacity activeOpacity={.6}>
             <View style={{marginBottom:20}}>
               <Image
                 source={Images.navBar}
@@ -56,6 +61,7 @@ const BottomTabNavigator = () => {
                 resizeMode='contain'
               />
             </View>
+            </TouchableOpacity>
           ),
         }}
       />
@@ -64,6 +70,7 @@ const BottomTabNavigator = () => {
         name={ScreenNames.Notify}
         options={{
           tabBarIcon: ({focused}) => (
+            
             <View style={{marginTop: 10}}>
               <Image
                 source={focused?Images.notify:Images.notification}
@@ -71,6 +78,7 @@ const BottomTabNavigator = () => {
                 resizeMode='contain'
               />
             </View>
+            
           ),
         }}
       />
@@ -78,10 +86,13 @@ const BottomTabNavigator = () => {
         component={Profile}
         name={ScreenNames.Profile}
         options={{
+          
           tabBarIcon: ({focused}) => (
+            
             <View style={{marginTop: 10}}>
               <Image source={focused?Images.profileActive:Images.profile} style={{height: 28, width: 28}} resizeMode='contain'/>
             </View>
+           
           ),
         }}
       />

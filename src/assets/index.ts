@@ -46,6 +46,16 @@ const Images = {
   notify:require('./images/Notify.png'),
   saveActive: require('./images/saveActive.png'),
   profileActive:require('./images/profileActive.png'),
+  options: require('./images/options.png'),
+  stars: require('./images/stars.png'),
+  share:require('./images/share.png'),
+  message:require('./images/message.png'),
+  unsave:require('./images/unsave.png'),
+  lefts: require('./images/lefts.png'),
+  searchs:  require('./images/search.png'),
+  filter: require('./images/filter.png'),
+  more: require('./images/more.png'),
+  dp: require('./images/dp.png'),
 };
 
 export {Images};
