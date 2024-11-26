@@ -11,23 +11,36 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
-// import styles from './styles';
 
 import {ScreenNames} from '../../navigator/screenNames';
 import {useNavigation} from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import {Images} from '../../assets';
 import {MEAL_FILTERS, NEW_RECIPE} from '../../components/data';
 import {vh, vw} from '../../theme/dimensions';
 
+import { useDispatch, useSelector } from 'react-redux';
+import { addFavorite,removeFavorite } from '../../redux/configure/favouriteSlice';
+
 const Home = () => {
   const navigation: any = useNavigation();
   const [recipes, setRecipes] = useState([]);
   const [loading, setLoading] = useState(true);
-  
+  const dispatch = useDispatch();
+  const favoriteItems = useSelector(state => state.favorites.items || []);
+  console.log('Home favourite----->>', favoriteItems);
+  const isFavorite = id => {
+    const safeFavoriteItems = Array.isArray(favoriteItems) ? favoriteItems : [];
+    return safeFavoriteItems.some(item => item.id === id);
+  };
 
+  console.log('Is favourite----->>', isFavorite);
   useEffect(() => {
     getTrendyRecipes();
+    AsyncStorage.getItem('persist:root').then(value => {
+      console.log('Persisted data:', value);
+    });
   }, []);
 
   const getTrendyRecipes = () => {
@@ -47,11 +60,16 @@ const Home = () => {
     )
       .then(response => response.json())
       .then(result => {
-        console.log('Search Results:', result.hits); 
+        // console.log('Search Results:', result.hits); 
         setRecipes(result.hits);
         setLoading(false);
       })
       .catch(error => console.log('error', error));
+  };
+
+  const handlesaveToggle = item => {
+    console.log("Item passed to handleSaveToggle:", item);
+    dispatch(addFavorite(item));
   };
 
   return (
@@ -90,7 +108,13 @@ const Home = () => {
               return (
                 <TouchableOpacity
                   activeOpacity={0.7}
-                  style={styles.categoryItem}>
+                  style={styles.categoryItem}
+                  onPress={() => {
+                    navigation.navigate(ScreenNames.Category, {
+                      category: item,
+                    });
+                  }}
+                  >
                   <View style={styles.card}>
                     <Image source={item.icon} style={styles.categoryIcon} />
                   </View>
@@ -106,6 +130,8 @@ const Home = () => {
             horizontal
             data={recipes}
             renderItem={({item, index}) => {
+              const favorite = isFavorite(item.id);
+              console.log("item.id",item.id)
               return (
                 <View>
                   <TouchableOpacity
@@ -118,7 +144,22 @@ const Home = () => {
                     }}>
                     <View style={styles.flat}>
                       <Text style={styles.dish}>{item.recipe.label}</Text>
+                      <View style={{flexDirection:'row',justifyContent:'space-between',marginTop:vh(10),marginHorizontal:vw(10)}}>
+                     <View>
+                      <Text style={{color:'#A9A9A9'}}>Time</Text>
+                      <Text>15 mins</Text>
+                     </View>
+                     <TouchableOpacity onPress={() =>
+                      handlesaveToggle(item)
+                     }>
+                     <View style={{height:vh(28),width:vw(28),backgroundColor:'white',justifyContent:'center',alignItems:'center',borderRadius:vh(20)}}>
+                      <Image source={favorite?Images.active:Images.inactive} style={{height:vh(16),width:vw(16)}}/>
+                     </View>
+                     </TouchableOpacity>
                     </View>
+                    </View>
+
+                    
                     <View
                       style={{
                         position: 'absolute',
@@ -139,7 +180,7 @@ const Home = () => {
                         <Text style={styles.point}>4.2</Text>
                       </View>
                     </View>
-                    {/* </View> */}
+                  
                   </TouchableOpacity>
                 </View>
               );
@@ -266,19 +307,24 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   dish: {
-    fontSize: 15,
-    fontWeight: '700',
-    marginTop: 30,
+    fontSize: 16,
+    fontWeight: '500',
+    lineHeight:vh(22),
+    alignSelf:'center',
+    marginTop: vh(26),
     textAlign: 'center',
     paddingHorizontal: 10,
+    height:'35%'
   },
   flat: {
     backgroundColor: '#D9D9D9',
     width: '100%',
-    height: '70%',
+    
+    paddingTop:vh(20),
+    
     justifyContent: 'center',
     borderRadius: 12,
-    alignItems: 'center',
+    
   },
   container: {
     flex: 1,
@@ -402,7 +448,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     alignItems: 'center',
 
-    flex: 1,
+   
     borderRadius: 10,
   },
   scroll: {

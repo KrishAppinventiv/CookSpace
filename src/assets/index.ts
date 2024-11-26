@@ -56,6 +56,7 @@ const Images = {
   filter: require('./images/filter.png'),
   more: require('./images/more.png'),
   dp: require('./images/dp.png'),
+  docnotify: require('./images/docnotify.png'),
 };
 
 export {Images};

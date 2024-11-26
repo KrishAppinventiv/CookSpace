@@ -2,10 +2,10 @@ import { Images } from '../../assets';
 
 export const DIET_FILTERS = [
     'balanced',
-    'high-fiber',
-    'high-protein',
     'low-carb',
     'low-fat',
+    'high-fiber',
+    'high-protein',
     'low-sodium',
   ];
 
@@ -85,7 +85,7 @@ export const DIET_FILTERS = [
     'sweets',
   ];
   export const CUISINE_FILTERS = [
-    'american',
+    
     'american',
     'british',
     'caribbean',

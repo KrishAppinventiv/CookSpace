@@ -15,7 +15,32 @@ import {colors} from '../../theme';
 const Notification = () => {
   const [selectedTab, setSelectedTab] = useState(0);
 
-  const notifyData = [{}];
+  const notifyData = [{
+    head:'New Recipe Alert!',
+    description: 'Lorem Ipsum tempor incididunt ut labore et dolore,in voluptate velit esse cillum',
+    time:12,
+
+  },{
+    head:'New Recipe Alert!',
+    description: 'Lorem Ipsum tempor incididunt ut labore et dolore,in voluptate velit esse cillum',
+    time:12,
+
+  },{
+    head:'New Recipe Alert!',
+    description: 'Lorem Ipsum tempor incididunt ut labore et dolore,in voluptate velit esse cillum',
+    time:12,
+
+  },{
+    head:'New Recipe Alert!',
+    description: 'Lorem Ipsum tempor incididunt ut labore et dolore,in voluptate velit esse cillum',
+    time:12,
+
+  },{
+    head:'New Recipe Alert!',
+    description: 'Lorem Ipsum tempor incididunt ut labore et dolore,in voluptate velit esse cillum',
+    time:12,
+
+  }];
   const today = new Date();
   const todayDate = today.toLocaleDateString();
   console.log(todayDate);
@@ -33,10 +58,22 @@ const Notification = () => {
     displayDate = NotificationDate;
   }
 
-  const renderItem = ({item}) => <View style={styles.card}></View>;
+  const renderItem = ({item}) => <View style={styles.card}>
+
+  
+  <View style={{width:'95%'}}>
+   <Text style={{fontSize:vh(17),fontWeight:'600'}}>{item.head}</Text>
+   <Text style={{color:'#A9A9A9',marginTop:vh(10),fontSize:vh(15),lineHeight:vh(22)}}>{item.description}</Text>
+   <Text style={{color:'#A9A9A9',marginTop:vh(8),fontSize:vh(13)}}>{item.time} mins ago</Text>
+  </View>
+  <View style={{height:vh(28),width:vw(28),backgroundColor:'#FFE1B3',justifyContent:'center',alignItems:'center',borderRadius:vh(10)}}>
+  <Image source={Images.docnotify}/>
+  </View>
+
+  </View>;
   return (
     <SafeAreaView style={styles.container}>
-      <View style={{flex: 0.3}}>
+      <View >
         <View style={styles.head}>
           <Text style={styles.heading}>Notifications</Text>
         </View>
@@ -129,14 +166,17 @@ const styles = StyleSheet.create({
   },
 
   card: {
-    height: vh(90),
-    marginBottom: vh(15),
-    marginHorizontal: vw(25),
+   justifyContent:'space-between',
+    marginBottom: vh(20),
+    marginHorizontal: vw(20),
     backgroundColor: '#F0F0F0',
-
+    flexDirection:'row',
     borderRadius: 10,
     shadowColor: '#000',
     shadowOpacity: 0.2,
     shadowRadius: 10,
+    paddingVertical:vh(14),
+    paddingHorizontal:vw(20),
+    marginTop:vh(15)
   },
 });

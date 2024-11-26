@@ -7,7 +7,7 @@ import {
   FlatList,
   ScrollView,
   TouchableWithoutFeedback,
-  Modal
+  Modal,
 } from 'react-native';
 import React, {useState} from 'react';
 import {useNavigation, useRoute} from '@react-navigation/native';
@@ -20,17 +20,15 @@ const Details = () => {
   const route = useRoute();
   const navigation = useNavigation();
   const [selectedTab, setSelectedTab] = useState(0);
-  const [isTooltipVisible, setTooltipVisible] = useState(false); 
+  const [isTooltipVisible, setTooltipVisible] = useState(false);
   const [selectedOption, setSelectedOption] = useState('');
 
   const url = route.params.data.recipe;
 
-
-
-  const handleOptionSelect = (option) => {
+  const handleOptionSelect = option => {
     setSelectedOption(option);
-    setTooltipVisible(false); 
-    console.log(option); 
+    setTooltipVisible(false);
+    console.log(option);
   };
   return (
     <View style={styles.container}>
@@ -42,14 +40,21 @@ const Details = () => {
         />
         <View style={styles.blackOverlap}>
           <TouchableOpacity onPress={() => navigation.goBack()}>
-            
             <View style={styles.ImageView}>
               <Image source={Images.left} style={styles.back} />
             </View>
             <TouchableOpacity onPress={() => setTooltipVisible(true)}>
-            <Image source={Images.options} style={{height:30,width:30,position:'absolute',top: vh(47),
-    right: vw(20),}}/>
-    </TouchableOpacity>
+              <Image
+                source={Images.options}
+                style={{
+                  height: 30,
+                  width: 30,
+                  position: 'absolute',
+                  top: vh(47),
+                  right: vw(20),
+                }}
+              />
+            </TouchableOpacity>
           </TouchableOpacity>
           <View style={styles.timeView}>
             <View style={styles.minView}>
@@ -68,15 +73,12 @@ const Details = () => {
         </View>
       </View>
 
-
-    
       {isTooltipVisible && (
         <Modal
           transparent={true}
           animationType="fade"
           visible={isTooltipVisible}
-          onRequestClose={() => setTooltipVisible(false)}
-        >
+          onRequestClose={() => setTooltipVisible(false)}>
           <TouchableWithoutFeedback onPress={() => setTooltipVisible(false)}>
             <View style={styles.modalBackground} />
           </TouchableWithoutFeedback>
@@ -84,38 +86,43 @@ const Details = () => {
           <View style={styles.tooltipContainer}>
             <TouchableOpacity
               style={styles.tooltipItem}
-              onPress={() => handleOptionSelect('Share')}
-            >
-                <Image source={Images.share} style={{marginRight:vw(14),height:vh(14),width:vw(20)}}/>
+              onPress={() => handleOptionSelect('Share')}>
+              <Image
+                source={Images.share}
+                style={{marginRight: vw(14), height: vh(14), width: vw(20)}}
+              />
               <Text style={styles.tooltipText}>Share</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.tooltipItem}
-              onPress={() => handleOptionSelect('Rate Recipe')}
-            >
-                <Image source={Images.stars} style={{marginRight:vw(14),height:vh(20),width:vw(20)}}/>
+              onPress={() => handleOptionSelect('Rate Recipe')}>
+              <Image
+                source={Images.stars}
+                style={{marginRight: vw(14), height: vh(20), width: vw(20)}}
+              />
               <Text style={styles.tooltipText}>Rate Recipe</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.tooltipItem}
-              onPress={() => handleOptionSelect('Review')}
-
-            >
-                <Image source={Images.message} style={{marginRight:vw(14),height:vh(20),width:vw(20)}}/>
+              onPress={() => handleOptionSelect('Review')}>
+              <Image
+                source={Images.message}
+                style={{marginRight: vw(14), height: vh(20), width: vw(20)}}
+              />
               <Text style={styles.tooltipText}>Review</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.tooltipItem}
-              onPress={() => handleOptionSelect('Unsave')}
-            >
-                <Image source={Images.unsave} style={{marginRight:vw(14),height:vh(20),width:vw(20)}}/>
+              onPress={() => handleOptionSelect('Unsave')}>
+              <Image
+                source={Images.unsave}
+                style={{marginRight: vw(14), height: vh(20), width: vw(20)}}
+              />
               <Text style={styles.tooltipText}>Unsave</Text>
             </TouchableOpacity>
           </View>
         </Modal>
       )}
-
-      
 
       <View style={styles.main}>
         <Text
@@ -159,50 +166,50 @@ const Details = () => {
           <Text style={styles.followText}>Follow</Text>
         </View>
       </View>
-       <View>
-      <FlatList
-        data={[
-          'Health',
-          'Cautions',
-          'Ingredients',
-          'Diet',
-          'Meal Type',
-          'Cuisines',
-          'Dish Type',
-        ]}
-        showsHorizontalScrollIndicator={false}
-        horizontal
-        renderItem={({item, index}) => {
-          return (
-            <TouchableOpacity
-              activeOpacity={0.7}
-              style={styles.typeItem}
-              onPress={() => {
-                setSelectedTab(index);
-              }}>
-              <View
-                style={[
-                  styles.category,
-                  {
-                    backgroundColor:
-                      selectedTab == index ? colors.main : colors.white,
-                  },
-                ]}>
-                <Text
-                  style={{
-                    color: selectedTab == index ? 'white' : '#71B1A1',
-                    fontWeight: '800',
-                    fontSize: selectedTab == index ? 14 : 16,
-                  }}>
-                  {item}
-                </Text>
-              </View>
-            </TouchableOpacity>
-          );
-        }}
-      />
+      <View>
+        <FlatList
+          data={[
+            'Health',
+            'Cautions',
+            'Ingredients',
+            'Diet',
+            'Meal Type',
+            'Cuisines',
+            'Dish Type',
+          ]}
+          showsHorizontalScrollIndicator={false}
+          horizontal
+          renderItem={({item, index}) => {
+            return (
+              <TouchableOpacity
+                activeOpacity={0.7}
+                style={styles.typeItem}
+                onPress={() => {
+                  setSelectedTab(index);
+                }}>
+                <View
+                  style={[
+                    styles.category,
+                    {
+                      backgroundColor:
+                        selectedTab == index ? colors.main : colors.white,
+                    },
+                  ]}>
+                  <Text
+                    style={{
+                      color: selectedTab == index ? 'white' : '#71B1A1',
+                      fontWeight: '800',
+                      fontSize: selectedTab == index ? 14 : 16,
+                    }}>
+                    {item}
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            );
+          }}
+        />
       </View>
-      
+
       <FlatList
         data={
           selectedTab == 0
@@ -222,23 +229,30 @@ const Details = () => {
             : url.dishType
         }
         renderItem={({item, index}) => {
-            const capitalizeAfterSlash = (str) => {
-                return str
-                  .replace(/(^\w|\s\w|\/\w)/g, (match) => match.toUpperCase());
-              };
-          
-              const capitalizedItem = capitalizeAfterSlash(item);
+          const capitalizeAfterSlash = str => {
+            return str.replace(/(^\w|\s\w|\/\w)/g, match =>
+              match.toUpperCase(),
+            );
+          };
+
+          const capitalizedItem = capitalizeAfterSlash(item);
           return (
-            <View style={{marginHorizontal:vw(20),marginTop:vh(8)}}>
-                <View style={styles.ingredient}>
-              <Text style={{marginStart:vw(20),fontSize:vh(16),fontWeight:'600',color:'#235347'}}>{capitalizedItem}</Text>
+            <View style={{marginHorizontal: vw(20), marginTop: vh(8)}}>
+              <View style={styles.ingredient}>
+                <Text
+                  style={{
+                    marginStart: vw(20),
+                    fontSize: vh(16),
+                    fontWeight: '600',
+                    color: '#235347',
+                  }}>
+                  {capitalizedItem}
+                </Text>
               </View>
             </View>
           );
         }}
       />
-     
-      
     </View>
   );
 };
@@ -247,12 +261,12 @@ export default Details;
 
 const styles = StyleSheet.create({
   ingredient: {
-    backgroundColor:'#D9D9D9',
-    marginBottom:vh(10),
-    justifyContent:'center',
-    paddingTop:vh(28),
-    paddingBottom:vh(28),
-    borderRadius:10,
+    backgroundColor: '#D9D9D9',
+    marginBottom: vh(10),
+    justifyContent: 'center',
+    paddingTop: vh(28),
+    paddingBottom: vh(28),
+    borderRadius: 10,
     shadowColor: 'rgba(0,0,0,.3)',
     shadowOpacity: 5,
   },
@@ -330,13 +344,13 @@ const styles = StyleSheet.create({
   tooltipItem: {
     paddingVertical: vh(10),
     paddingHorizontal: vw(15),
-    flexDirection:'row'
+    flexDirection: 'row',
   },
   tooltipText: {
     fontSize: 17,
     color: colors.black,
     fontWeight: '500',
-    fontFamily:'Poppins'
+    fontFamily: 'Poppins',
   },
   modalBackground: {
     flex: 1,
@@ -384,7 +398,6 @@ const styles = StyleSheet.create({
   back: {
     height: 32,
     width: 32,
-  
   },
   ImageView: {
     width: vw(35),
@@ -396,7 +409,6 @@ const styles = StyleSheet.create({
     left: vw(20),
     justifyContent: 'center',
     alignItems: 'center',
-    
   },
   blackOverlap: {
     width: '100%',

@@ -11,7 +11,8 @@ const ScreenNames = {
   Search:'Search',
   Add:'Add',
   Notify:'Notification',
-  Save:'Save'
+  Save:'Save',
+  Category:'Category'
 };
 
 export {ScreenNames};

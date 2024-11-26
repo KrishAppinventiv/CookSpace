@@ -1,11 +1,52 @@
-import { Image, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React from 'react'
+import { ActivityIndicator, FlatList, Image, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import React, { useEffect, useState } from 'react'
 import { Images } from '../../assets'
 import { useNavigation } from '@react-navigation/native'
 import { vh, vw } from '../../theme/dimensions'
+import { useSelector } from 'react-redux'
+import { ScreenNames } from '../../navigator/screenNames'
 
 const Save = () => {
-    const navigation = useNavigation();
+    const navigation:any = useNavigation();
+    const [recipes, setRecipes] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const favoriteItems = useSelector(state => state.favorites.items);
+    console.log("favourite----->>>",favoriteItems)
+    
+    const renderItem = ({item}) => 
+    
+      (
+        <TouchableOpacity activeOpacity={.8} onPress={() => {
+          navigation.navigate(ScreenNames.Details, {
+            data: item,
+          });
+        }}>
+      <View style={styles.card}>
+        <Image source={{uri: item.recipe.image}} style={styles.recipeImage} />
+  
+      
+        <View style={styles.transparentView}>
+  
+        <View style={styles.review}>
+          <Image source={Images.star} style={{height: 15, width: 15}} />
+          <Text style={styles.point}>4.2</Text>
+        </View>
+          <Text style={styles.recipeTitle}>{item.recipe.label}</Text>
+          <Text style={styles.recipeSource}>{item.recipe.source}</Text>
+         
+        </View>
+  
+        
+      </View>
+      </TouchableOpacity>
+    );
+
+    useEffect(() => {
+     setRecipes(favoriteItems)
+
+    }, [favoriteItems]);
+
+    
   return (
     <SafeAreaView style={styles.container}>
    
@@ -15,7 +56,28 @@ const Save = () => {
         style={styles.heading}>
         Saved Recipes
       </Text>
-    </View></SafeAreaView>
+    </View>
+    
+    <View
+        style={{
+          marginTop: vh(20),
+          marginHorizontal: vw(20),
+         
+         flex:1
+        }}>
+        {/* {loading ? (
+          <ActivityIndicator />
+        ) : ( */}
+          <FlatList
+            showsVerticalScrollIndicator={false}
+            data={recipes}
+            renderItem={renderItem}
+            keyExtractor={(item, index) => index.toString()}
+           
+          />
+        {/* )} */}
+      </View>
+    </SafeAreaView>
   )
 }
 
@@ -37,5 +99,60 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         
       },
-     
+      card: {
+        
+        height: vh(170),
+        marginBottom: vh(15),
+        marginRight: vw(15),
+        backgroundColor: '#f9f9f9',
+        justifyContent: 'flex-end',
+        borderRadius: 10,
+        shadowColor: '#000',
+        shadowOpacity: 0.3,
+        shadowRadius: 10,
+        
+      },
+      recipeImage: {
+        width: '100%',
+        height: '100%',
+        borderRadius: 10,
+      },
+      recipeTitle: {
+        fontSize: 16,
+        fontWeight: '700',
+        marginTop: vh(10),
+        color: 'white',
+      },
+      recipeSource: {
+        fontSize: 12,
+        fontWeight: '500',
+        color: '#F0F0F0',
+        marginTop: vh(4),
+      },
+      transparentView: {
+        height: '100%',
+        width: '100%',
+        position: 'absolute',
+        backgroundColor: 'rgba(0,0,0,.3)',
+        justifyContent: 'flex-end',
+        paddingBottom: vh(15),
+        paddingStart: vw(10),
+        borderRadius: 10,
+      },
+      point: {
+        fontSize: 13,
+        marginLeft: 4,
+      },
+      review: {
+        width: 50,
+        height: 23,
+        position: 'absolute',
+        top: 10,
+        right: 10,
+        backgroundColor: '#FFE1B3',
+        borderRadius: 17,
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+      },  
 })
