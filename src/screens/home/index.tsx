@@ -22,25 +22,50 @@ import {vh, vw} from '../../theme/dimensions';
 
 import { useDispatch, useSelector } from 'react-redux';
 import { addFavorite,removeFavorite } from '../../redux/configure/favouriteSlice';
+import { getAuth } from '@react-native-firebase/auth';
+import { getFirestore } from '@react-native-firebase/firestore';
 
 const Home = () => {
   const navigation: any = useNavigation();
   const [recipes, setRecipes] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [name, setName] = useState('')
   const dispatch = useDispatch();
   const favoriteItems = useSelector(state => state.favorites.items || []);
   console.log('Home favourite----->>', favoriteItems);
-  const isFavorite = id => {
+  const isFavorite = label => {
     const safeFavoriteItems = Array.isArray(favoriteItems) ? favoriteItems : [];
-    return safeFavoriteItems.some(item => item.id === id);
+    return safeFavoriteItems.some(item => item.recipe.label === label);
   };
 
   console.log('Is favourite----->>', isFavorite);
   useEffect(() => {
     getTrendyRecipes();
-    AsyncStorage.getItem('persist:root').then(value => {
-      console.log('Persisted data:', value);
-    });
+    // const checkAsyncStorage = async () => {
+    //   try {
+    //     const storedData = await AsyncStorage.getItem('persist:favorites');
+    //     console.log('Stored Data from AsyncStorage:', storedData);
+    //   } catch (error) {
+    //     console.error('Error reading AsyncStorage:', error);
+    //   }
+    // };
+    
+    // checkAsyncStorage();
+
+    const fetchname = async () => {
+      const userId = getAuth().currentUser?.uid;
+     
+      const userDoc = await getFirestore()
+        .collection('users')
+        .doc(userId)
+        .get();
+      console.log('userdoc---->>', userDoc);
+     
+      const name = userDoc.data()?.name || '';
+      setName(name);
+    };
+
+    fetchname()
   }, []);
 
   const getTrendyRecipes = () => {
@@ -68,8 +93,13 @@ const Home = () => {
   };
 
   const handlesaveToggle = item => {
-    console.log("Item passed to handleSaveToggle:", item);
-    dispatch(addFavorite(item));
+    if(isFavorite(item.recipe.label)){
+      dispatch(removeFavorite(item))
+    }else{
+      dispatch(addFavorite(item));
+    }
+    
+   
   };
 
   return (
@@ -80,10 +110,10 @@ const Home = () => {
         <Image source={Images.top} style={styles.banner} />
 
         <View style={styles.transparentView}>
-          <Text style={styles.logo}>Hello, Krishna</Text>
+          <Text style={styles.logo}>Hello, {name.split(' ').shift()}</Text>
           <Text style={styles.cookText}>What are you cooking today?</Text>
           <TouchableOpacity activeOpacity={0.8} style={styles.searchBox} onPress={() => navigation.navigate(ScreenNames.Search)}>
-            <Image source={Images.search} style={{height: 30, width: 30}} />
+            <Image source={Images.search} style={{height: vh(30), width: vw(30)}} />
             <Text style={styles.placeholder}>Please search here...</Text>
           </TouchableOpacity>
 
@@ -130,8 +160,8 @@ const Home = () => {
             horizontal
             data={recipes}
             renderItem={({item, index}) => {
-              const favorite = isFavorite(item.id);
-              console.log("item.id",item.id)
+              const favorite = isFavorite(item.recipe.label);
+              console.log("item.id",item.recipe.label)
               return (
                 <View>
                   <TouchableOpacity
@@ -332,10 +362,14 @@ const styles = StyleSheet.create({
   },
   topView: {
     height: '45%',
+    
   },
   banner: {
     height: '100%',
     width: '100%',
+    
+    borderBottomStartRadius:vh(15),
+    borderBottomEndRadius:vh(15)
   },
   transparentView: {
     height: '100%',
@@ -344,6 +378,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,.4)',
     justifyContent: 'center',
     alignItems: 'center',
+    borderBottomStartRadius:vh(15),
+    borderBottomEndRadius:vh(15)
   },
   searchBox: {
     width: '90%',

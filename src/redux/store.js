@@ -12,11 +12,11 @@ const persistConfig = {
   whitelist: ['favorites'],
 };
 
-const persistedReducer = persistReducer(persistConfig, favoritesReducer);
+
 
 const Store = configureStore({
   reducer: {
-    favorites: persistedReducer,
+    favorites:favoritesReducer,
   },
 
   middleware: (getDefaultMiddleware) =>
@@ -27,8 +27,8 @@ const Store = configureStore({
     }),
 });
 
-const persistor = persistStore(Store);
 
-export {Store, persistor};
+
+export default Store
 
 const styles = StyleSheet.create({});

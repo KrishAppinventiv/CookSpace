@@ -79,7 +79,7 @@ const Signin = () => {
             // Try signing in first
             await firebase.auth().signInWithEmailAndPassword(Email, Password);
             console.log('User logged in successfully!');
-            navigation.navigate(ScreenNames.Home); 
+            navigation.navigate(ScreenNames.BottomTab); 
       
           } catch (error) {
             console.log('User not found. Attempting to sign up...');

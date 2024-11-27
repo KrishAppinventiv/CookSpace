@@ -1,5 +1,5 @@
 import {createSlice} from '@reduxjs/toolkit';
-
+import {act} from 'react';
 
 const initialState = {
   items: [],
@@ -10,7 +10,7 @@ const favoritesSlice = createSlice({
   initialState,
   reducers: {
     addFavorite(state, action) {
-      console.log("action payload", action.payload.recipe.ingredients)
+      console.log('action payload', action.payload);
       if (
         !action.payload ||
         !action.payload.recipe ||
@@ -20,7 +20,6 @@ const favoritesSlice = createSlice({
         return state;
       }
 
-     
       const {label} = action.payload.recipe;
 
       const existingItem = state.items.find(item => {
@@ -35,14 +34,12 @@ const favoritesSlice = createSlice({
     },
 
     removeFavorite(state, action) {
-      state.items = state.items.filter(item => item !== action.payload);
+      const {label} = action.payload.recipe;
+      state.items = state.items.filter(item => item.recipe.label !== label);
+      console.log('Updated favorites after removal:', state.items);
     },
-
   },
-
-
-  
 });
 
-export const {addFavorite,removeFavorite} = favoritesSlice.actions;
+export const {addFavorite, removeFavorite} = favoritesSlice.actions;
 export default favoritesSlice.reducer;

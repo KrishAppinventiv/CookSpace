@@ -54,7 +54,7 @@ export const DIET_FILTERS = [
     {title: 'lunch', icon: Images.lunch,},
     {title: 'dinner', icon: Images.dinner,},
     {title: 'snack', icon: Images.snack,},
-    {title: 'teatime', icon: Images.dinner,}
+    {title: 'teatime', icon: Images.tea,}
   ];
   
   export const DISH_FILTERS = [

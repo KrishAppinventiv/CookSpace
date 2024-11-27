@@ -7,73 +7,149 @@ import {
   Text,
   TouchableOpacity,
   View,
+  Modal,
+  TouchableWithoutFeedback,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {Images} from '../../assets';
 import {useNavigation} from '@react-navigation/native';
 import {vh, vw} from '../../theme/dimensions';
 import {colors} from '../../theme';
-import { useSelector } from 'react-redux';
-import { ScreenNames } from '../../navigator/screenNames';
+import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
+import {useSelector} from 'react-redux';
+import {ScreenNames} from '../../navigator/screenNames';
+import {getStorage} from '@react-native-firebase/storage';
+import {getFirestore} from '@react-native-firebase/firestore';
+import {getAuth, signOut} from '@react-native-firebase/auth';
 
 const Profile = () => {
   const navigation: any = useNavigation();
   const [selectedTab, setSelectedTab] = useState('Recipe');
+  const [name, setName] = useState('');
+  const [url, setUrl] = useState('');
+  const [recipes, setRecipes] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [imgUri, SetImgUri] = useState(false);
+  const [userProfilePic, setUserProfilePic] = useState('');
+  const [isTooltipVisible, setTooltipVisible] = useState(false);
+  const favoriteItems = useSelector(state => state.favorites.items);
+  console.log('favourite----->>>', favoriteItems);
 
-
-    const [recipes, setRecipes] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const favoriteItems = useSelector(state => state.favorites.items);
-    console.log("favourite----->>>",favoriteItems)
- 
-
-  
-    const renderItem = ({item}) => 
-    
-      (
-        <TouchableOpacity activeOpacity={.8} onPress={() => {
-          navigation.navigate(ScreenNames.Details, {
-            data: item,
-          });
-        }}>
+  const renderItem = ({item}) => (
+    <TouchableOpacity
+      activeOpacity={0.8}
+      onPress={() => {
+        navigation.navigate(ScreenNames.Details, {
+          data: item,
+        });
+      }}>
       <View style={styles.card}>
         <Image source={{uri: item.recipe.image}} style={styles.recipeImage} />
-  
-      
+
         <View style={styles.transparentView}>
-  
-        <View style={styles.review}>
-          <Image source={Images.star} style={{height: 15, width: 15}} />
-          <Text style={styles.point}>4.2</Text>
-        </View>
+          <View style={styles.review}>
+            <Image source={Images.star} style={{height: 15, width: 15}} />
+            <Text style={styles.point}>4.2</Text>
+          </View>
           <Text style={styles.recipeTitle}>{item.recipe.label}</Text>
           <Text style={styles.recipeSource}>{item.recipe.source}</Text>
-         
         </View>
-  
-        
       </View>
-      </TouchableOpacity>
-    );
-    
+    </TouchableOpacity>
+  );
 
-    useEffect(() => {
-    //  setLoading(false);
-     setRecipes(favoriteItems)
-     setLoading(false);
-    
-    }, [favoriteItems]);
+  const handleOptionSelect = async option => {
+    setTooltipVisible(false);
+    switch (option) {
+      case 'Logout':
+        try {
+          await signOut(getAuth());
+          navigation.replace(ScreenNames.Signin);
+        } catch (error) {
+          console.error('Error during logout: ', error);
+        }
+        break;
+      case 'Share':
+        console.log('Share selected');
+        break;
+      case 'Rate Recipe':
+        console.log('Rate Recipe selected');
+        break;
+      case 'Review':
+        console.log('Review selected');
+        break;
+      default:
+        console.log(`${option} selected`);
+        break;
+    }
+  };
 
-    // useEffect(() => {
-    //    setLoading(false);
-       
-  
-    //   }, [recipes]);
-  
+  const handleUploadFromGallery = async () => {
+    launchImageLibrary({mediaType: 'photo'}, async response => {
+      if (response.didCancel) {
+        console.log('User cancelled image picker');
+      } else if (response.error) {
+        console.log('ImagePicker Error: ', response.error);
+      } else {
+        const imageUri = response.assets[0].uri;
+        console.log('Image URI: ', imageUri);
+
+        const filename = imageUri.split('/').pop();
+        console.log('File', filename);
+        const userId = getAuth().currentUser?.uid;
+        console.log('UserId', userId);
+
+        if (userId) {
+          try {
+            await getFirestore().collection('users').doc(userId).update({
+              profilePic: imageUri,
+            });
+
+            console.log('Image URI stored in Firestore successfully!');
+
+            setUrl(imageUri);
+            SetImgUri(true);
+          } catch (error) {
+            console.error('Error storing image URI in Firestore: ', error);
+          }
+        } else {
+          console.log('User ID is null or undefined');
+        }
+      }
+    });
+  };
+  useEffect(() => {
+    const fetchProfilePic = async () => {
+      const userId = getAuth().currentUser?.uid;
+      if (!userId) {
+        console.log('User is not authenticated');
+        return;
+      }
+
+      const userDoc = await getFirestore()
+        .collection('users')
+        .doc(userId)
+        .get();
+      console.log('userdoc---->>', userDoc);
+      const profilePic = userDoc.data()?.profilePic || '';
+      setUserProfilePic(profilePic);
+      const name = userDoc.data()?.name || '';
+      setName(name);
+    };
+    fetchProfilePic();
+  }, []);
+
+  useEffect(() => {
+    setRecipes(favoriteItems);
+    setLoading(false);
+  }, [favoriteItems]);
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={{alignItems: 'flex-end', marginEnd: 20}}>
-        <Image source={Images.more} style={styles.back} />
+        <TouchableOpacity onPress={() => setTooltipVisible(true)}>
+          <Image source={Images.more} style={styles.back} />
+        </TouchableOpacity>
       </View>
 
       <View style={styles.head}>
@@ -81,14 +157,42 @@ const Profile = () => {
       </View>
 
       <View style={{flexDirection: 'row', marginHorizontal: vw(10)}}>
-        <Image source={Images.dp} style={{width: vw(99), height: vh(99)}} />
+        <View
+          style={{
+            borderRadius: vh(60),
+            height: vh(102),
+            width: vw(102),
+            borderWidth: 3,
+            borderColor: colors.main,
+            justifyContent: 'center',
+            alignItems: 'center',
+            opacity: 0.9,
+          }}>
+          <TouchableOpacity
+            activeOpacity={0.7}
+            onPress={() => handleUploadFromGallery()}>
+            {imgUri || userProfilePic ? (
+              <Image
+                source={{uri: imgUri ? url : userProfilePic}}
+                style={{width: vw(99), height: vh(99), borderRadius: vh(60)}}
+                resizeMode="cover"
+              />
+            ) : (
+              <Image
+                source={Images.dp}
+                style={{width: vw(99), height: vh(99), borderRadius: vh(60)}}
+                resizeMode="cover"
+              />
+            )}
+          </TouchableOpacity>
+        </View>
         <View
           style={{
             flex: 1,
             justifyContent: 'space-between',
             flexDirection: 'row',
             marginTop: vh(20),
-            marginHorizontal: vw(25),
+            marginHorizontal: vw(30),
           }}>
           <View>
             <Text style={{color: '#A9A9A9'}}>Recipe</Text>
@@ -129,7 +233,7 @@ const Profile = () => {
         </View>
       </View>
 
-      <View style={{marginHorizontal: vw(25), marginTop: vh(5)}}>
+      <View style={{marginHorizontal: vw(21), marginTop: vh(25)}}>
         <Text
           style={{
             color: '#121212',
@@ -137,7 +241,7 @@ const Profile = () => {
             fontSize: vh(20),
             fontFamily: 'Poppins',
           }}>
-          Krishna
+          {name}
         </Text>
         <Text style={{color: '#A9A9A9', lineHeight: vh(16.5)}}>Chef</Text>
         <Text
@@ -159,111 +263,142 @@ const Profile = () => {
         </Text>
       </View>
 
-      
-
-      <View
-        style={[
-          styles.category,
-      
-        ]}>
-         <TouchableOpacity style={[styles.selected,{
-                    backgroundColor:
-                      selectedTab == 'Recipe' ? colors.main : colors.white,
-                  }]} onPress={()=>{
-          setSelectedTab('Recipe')
-         }}>
+      <View style={[styles.category]}>
+        <TouchableOpacity
+          style={[
+            styles.selected,
+            {
+              backgroundColor:
+                selectedTab == 'Recipe' ? colors.main : colors.white,
+            },
+          ]}
+          onPress={() => {
+            setSelectedTab('Recipe');
+          }}>
           <Text
-           style={{
-            color: selectedTab == 'Recipe' ? 'white' : '#71B1A1',
-            fontWeight: '800',
-            fontSize: selectedTab == 'Recipe' ? 14 : 16,
-          }}>Recipe</Text>
-         </TouchableOpacity>
-         <TouchableOpacity style={[styles.selected,{
-                    backgroundColor:
-                      selectedTab == 'Video' ? colors.main : colors.white,
-                  }]}  onPress={()=>{
-          setSelectedTab('Video')
-         }}>
-          <Text style={{
-            color: selectedTab == 'Video' ? 'white' : '#71B1A1',
-            fontWeight: '800',
-            fontSize: selectedTab == 'Video' ? 14 : 16,
-          }}>Video</Text>
-         </TouchableOpacity>
-         <TouchableOpacity style={[styles.selected,{
-                    backgroundColor:
-                      selectedTab == 'Tags' ? colors.main : colors.white,
-                  }]} onPress={()=>{
-          setSelectedTab('Tags')
-         }}>
-         <Text style={{
-            color: selectedTab == 'Tags' ? 'white' : '#71B1A1',
-            fontWeight: '800',
-            fontSize: selectedTab == 'Tags' ? 14 : 16,
-          }}>Tags</Text>
-         </TouchableOpacity>
+            style={{
+              color: selectedTab == 'Recipe' ? 'white' : '#71B1A1',
+              fontWeight: '800',
+              fontSize: selectedTab == 'Recipe' ? 14 : 16,
+            }}>
+            Recipe
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[
+            styles.selected,
+            {
+              backgroundColor:
+                selectedTab == 'Video' ? colors.main : colors.white,
+            },
+          ]}
+          onPress={() => {
+            setSelectedTab('Video');
+          }}>
+          <Text
+            style={{
+              color: selectedTab == 'Video' ? 'white' : '#71B1A1',
+              fontWeight: '800',
+              fontSize: selectedTab == 'Video' ? 14 : 16,
+            }}>
+            Video
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[
+            styles.selected,
+            {
+              backgroundColor:
+                selectedTab == 'Tags' ? colors.main : colors.white,
+            },
+          ]}
+          onPress={() => {
+            setSelectedTab('Tags');
+          }}>
+          <Text
+            style={{
+              color: selectedTab == 'Tags' ? 'white' : '#71B1A1',
+              fontWeight: '800',
+              fontSize: selectedTab == 'Tags' ? 14 : 16,
+            }}>
+            Tags
+          </Text>
+        </TouchableOpacity>
       </View>
-      {selectedTab=='Recipe' &&  <View
-         style={{
-           marginTop: vh(20),
-           marginHorizontal: vw(20),
-          
-          flex:1
-         }}>
- 
-          
-         {recipes.length==0 ? (
-           
-          <View style={{flex:1,justifyContent:'center',alignItems:'center'}}>
-           <Text>No Recipes Yet</Text>
+      {selectedTab == 'Recipe' && (
+        <View
+          style={{
+            marginTop: vh(20),
+            marginHorizontal: vw(20),
+
+            flex: 1,
+          }}>
+          {recipes.length == 0 ? (
+            <View
+              style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+              <Text>No Recipes Yet</Text>
+            </View>
+          ) : (
+            <FlatList
+              showsVerticalScrollIndicator={false}
+              data={recipes}
+              renderItem={renderItem}
+              keyExtractor={(item, index) => index.toString()}
+            />
+          )}
+        </View>
+      )}
+
+      {isTooltipVisible && (
+        <Modal
+          transparent={true}
+          animationType="fade"
+          visible={isTooltipVisible}
+          onRequestClose={() => setTooltipVisible(false)}>
+          <TouchableWithoutFeedback onPress={() => setTooltipVisible(false)}>
+            <View style={styles.modalBackground} />
+          </TouchableWithoutFeedback>
+
+          <View style={styles.tooltipContainer}>
+            <TouchableOpacity
+              style={styles.tooltipItem}
+              onPress={() => handleOptionSelect('Share')}>
+              <Image
+                source={Images.share}
+                style={{marginRight: vw(14), height: vh(14), width: vw(20)}}
+              />
+              <Text style={styles.tooltipText}>Share</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.tooltipItem}
+              onPress={() => handleOptionSelect('Rate Recipe')}>
+              <Image
+                source={Images.stars}
+                style={{marginRight: vw(14), height: vh(20), width: vw(20)}}
+              />
+              <Text style={styles.tooltipText}>Rate Recipe</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.tooltipItem}
+              onPress={() => handleOptionSelect('Review')}>
+              <Image
+                source={Images.message}
+                style={{marginRight: vw(14), height: vh(20), width: vw(20)}}
+              />
+              <Text style={styles.tooltipText}>Review</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.tooltipItem}
+              onPress={() => handleOptionSelect('Logout')}>
+              <Image
+                source={Images.logout}
+                style={{marginRight: vw(14), height: vh(20), width: vw(20)}}
+              />
+              <Text style={styles.tooltipText}>Logout</Text>
+            </TouchableOpacity>
           </View>
-         ) : (
- 
-           
-           
-           <FlatList
-             showsVerticalScrollIndicator={false}
-             data={recipes}
-             renderItem={renderItem}
-             keyExtractor={(item, index) => index.toString()}
-            
-           />
-      )} 
-       </View>
-      }
-
-      {/* <View
-        style={{
-          marginTop: vh(20),
-          marginHorizontal: vw(20),
-         
-         flex:1
-        }}>
-
-         
-        {recipes.length==0 ? (
-          
-         <View style={{flex:1,justifyContent:'center',alignItems:'center'}}>
-          <Text>No Recipes Yet</Text>
-         </View>
-        ) : (
-
-          
-          
-          <FlatList
-            showsVerticalScrollIndicator={false}
-            data={recipes}
-            renderItem={renderItem}
-            keyExtractor={(item, index) => index.toString()}
-           
-          />
-     )} 
-      </View> */}
-      
-
-
-      
+        </Modal>
+      )}
     </SafeAreaView>
   );
 };
@@ -272,10 +407,10 @@ export default Profile;
 
 const styles = StyleSheet.create({
   selected: {
-    backgroundColor:colors.main,
-    paddingHorizontal:vw(30),
-    paddingVertical:vh(10),
-    borderRadius:vh(10),
+    backgroundColor: colors.main,
+    paddingHorizontal: vw(30),
+    paddingVertical: vh(10),
+    borderRadius: vh(10),
   },
   heading: {
     textAlign: 'center',
@@ -303,18 +438,17 @@ const styles = StyleSheet.create({
     paddingBottom: vh(10),
   },
   category: {
-     marginTop:vh(20),
-     flexDirection:'row',
-    justifyContent:'space-between',
+    marginTop: vh(20),
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    marginHorizontal:vh(20)
+    marginHorizontal: vh(20),
     // borderRadius: 10,
     // paddingHorizontal: vh(20),
     // paddingVertical: vw(10),
   },
 
   card: {
-        
     height: vh(170),
     marginBottom: vh(15),
     marginRight: vw(15),
@@ -324,7 +458,6 @@ const styles = StyleSheet.create({
     shadowColor: '#000',
     shadowOpacity: 0.3,
     shadowRadius: 10,
-    
   },
   recipeImage: {
     width: '100%',
@@ -368,5 +501,31 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-  },  
+  },
+  tooltipContainer: {
+    position: 'absolute',
+    top: vh(50),
+    right: vw(20),
+    backgroundColor: 'white',
+    padding: vh(10),
+    borderRadius: 8,
+    shadowColor: 'rgba(0,0,0,.3)',
+    shadowOpacity: 10,
+    elevation: 5,
+  },
+  tooltipItem: {
+    paddingVertical: vh(10),
+    paddingHorizontal: vw(15),
+    flexDirection: 'row',
+  },
+  tooltipText: {
+    fontSize: 17,
+    color: colors.black,
+    fontWeight: '500',
+    fontFamily: 'Poppins',
+  },
+  modalBackground: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
 });

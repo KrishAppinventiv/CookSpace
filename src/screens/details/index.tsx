@@ -26,7 +26,7 @@ const Details = () => {
   const url = route.params.data.recipe;
 
   const handleOptionSelect = option => {
-    setSelectedOption(option);
+    // setSelectedOption(option);
     setTooltipVisible(false);
     console.log(option);
   };

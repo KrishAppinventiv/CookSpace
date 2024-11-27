@@ -97,7 +97,9 @@ const Signup = () => {
                     email: Email,
                     profilePic: '',
                     createdAt: FieldValue.serverTimestamp(),
-                    dateofbirth: ''
+                    dateofbirth: '',
+                    savedItem:[],
+                    PostItem:[]
                 });
                 console.log('User data saved to Firestore successfully!');
                 navigation.navigate(ScreenNames.Signin); // Navigate after successful sign-up
