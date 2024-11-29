@@ -58,6 +58,9 @@ const Images = {
   dp: require('./images/dp.png'),
   docnotify: require('./images/docnotify.png'),
   logout: require('./images/logout.png'),
+  addphoto: require('./images/AddPhoto.png'),
+  cancel: require('./images/cancel.png'),
+  gallery: require('./images/gallery.png')
 }; 
 
 export {Images};

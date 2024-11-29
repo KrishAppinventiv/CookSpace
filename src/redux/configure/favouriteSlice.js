@@ -9,19 +9,15 @@ const favoritesSlice = createSlice({
   name: 'favorites',
   initialState,
   reducers: {
+    setFavorites(state, action) {
+      state.items = action.payload;
+      console.log('Tryinggggggg', state.items);
+    },
     addFavorite(state, action) {
       console.log('action payload', action.payload);
-      if (
-        !action.payload ||
-        !action.payload.recipe ||
-        !action.payload.recipe.label
-      ) {
-        console.error('Invalid payload:', action.payload);
-        return state;
-      }
 
-      const {label} = action.payload.recipe;
-
+      const {label} = action.payload.recipe.recipe;
+      console.log('hiiii', label);
       const existingItem = state.items.find(item => {
         return item.recipe.label === label;
       });
@@ -34,12 +30,23 @@ const favoritesSlice = createSlice({
     },
 
     removeFavorite(state, action) {
-      const {label} = action.payload.recipe;
-      state.items = state.items.filter(item => item.recipe.label !== label);
+      console.log('acttttion', state.items);
+      console.log('acttttionpayload', action.payload);
+      const dish = action.payload.recipeLabel;
+     
+      console.log('Updated favorites before removal:', state.items);
+      state.items = state.items.filter(item => {
+        console.log('itemlabelcheck', item.recipe.recipe.label);
+        console.log('labelcheck', dish.recipe.label);
+    
+       
+        return item.recipe.recipe.label !== dish.recipe.label;
+      });
       console.log('Updated favorites after removal:', state.items);
     },
   },
 });
 
-export const {addFavorite, removeFavorite} = favoritesSlice.actions;
+export const {addFavorite, removeFavorite, setFavorites} =
+  favoritesSlice.actions;
 export default favoritesSlice.reducer;

@@ -224,7 +224,7 @@ const Search = () => {
           paddingBottom: vh(140),
         }}>
         {loading ? (
-          <ActivityIndicator />
+          <Text style={{alignSelf:'center'}}>No Previous History</Text>
         ) : (
           <FlatList
             showsVerticalScrollIndicator={false}

@@ -1,4 +1,5 @@
 import {StyleSheet} from 'react-native';
+import { vh, vw } from '../../theme/dimensions';
 
 export default StyleSheet.create({
     signupColor: {
@@ -10,24 +11,26 @@ export default StyleSheet.create({
         marginTop:60,
       },
       google: {
-        height:28,
-        width:28,
+        height:vh(28),
+        width:vw(28),
+        marginRight:vw(6)
       },
       googleView: {
-        height:54,
-        width:54,
+        height:vh(54),
+       
         elevation:2,
         justifyContent:'center',
         alignItems:'center',
+        flexDirection:'row',
         shadowColor: '#C3C3C3',
         shadowOpacity: 5,
         shadowRadius: 3,
         backgroundColor:'white',
         borderRadius:10,
-        marginHorizontal:10,
+        padding:20,
       },
       otherOption: {
-        flexDirection:'row',
+       alignItems:'center',
         justifyContent:'center',
         marginTop:40,
       },

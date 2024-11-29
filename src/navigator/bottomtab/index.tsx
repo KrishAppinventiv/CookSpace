@@ -53,7 +53,7 @@ const BottomTabNavigator = () => {
         name={ScreenNames.Add}
         options={{
           tabBarIcon: ({focused}) => (
-            <TouchableOpacity activeOpacity={.6}>
+            
             <View style={{marginBottom:20}}>
               <Image
                 source={Images.navBar}
@@ -61,7 +61,7 @@ const BottomTabNavigator = () => {
                 resizeMode='contain'
               />
             </View>
-            </TouchableOpacity>
+          
           ),
         }}
       />

@@ -32,6 +32,7 @@ const Details = () => {
   };
   return (
     <View style={styles.container}>
+      
       <View style={styles.headDish}>
         <Image
           source={{uri: url.image}}

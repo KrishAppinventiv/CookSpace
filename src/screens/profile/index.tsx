@@ -34,29 +34,42 @@ const Profile = () => {
   const [isTooltipVisible, setTooltipVisible] = useState(false);
   const favoriteItems = useSelector(state => state.favorites.items);
   console.log('favourite----->>>', favoriteItems);
+ console.log("profile recipe", favoriteItems)
 
-  const renderItem = ({item}) => (
-    <TouchableOpacity
-      activeOpacity={0.8}
-      onPress={() => {
-        navigation.navigate(ScreenNames.Details, {
-          data: item,
-        });
-      }}>
-      <View style={styles.card}>
-        <Image source={{uri: item.recipe.image}} style={styles.recipeImage} />
 
-        <View style={styles.transparentView}>
-          <View style={styles.review}>
-            <Image source={Images.star} style={{height: 15, width: 15}} />
-            <Text style={styles.point}>4.2</Text>
-          </View>
-          <Text style={styles.recipeTitle}>{item.recipe.label}</Text>
-          <Text style={styles.recipeSource}>{item.recipe.source}</Text>
-        </View>
-      </View>
-    </TouchableOpacity>
-  );
+
+ const renderItem = ({item}) => 
+      
+  {
+    const recipe = item.recipe; 
+    console.log("gughushu", recipe.recipe.source)
+    return (
+    <TouchableOpacity activeOpacity={.8} onPress={() => {
+      navigation.navigate(ScreenNames.Details, {
+        data: recipe, 
+      });
+    }}>
+  <View style={styles.card}>
+    <Image source={{uri:recipe.recipe.image}} style={styles.recipeImage} />
+
+  
+    <View style={styles.transparentView}>
+
+    <View style={styles.review}>
+      <Image source={Images.star} style={{height: 15, width: 15}} />
+      <Text style={styles.point}>4.2</Text>
+    </View>
+      <Text style={styles.recipeTitle}>{recipe.recipe.label}</Text>
+      <Text style={styles.recipeSource}>{recipe.recipe.source}</Text>
+     
+    </View>
+
+    
+  </View>
+  </TouchableOpacity>
+);
+};
+
 
   const handleOptionSelect = async option => {
     setTooltipVisible(false);

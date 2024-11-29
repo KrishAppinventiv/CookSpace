@@ -20,25 +20,39 @@ import {Images} from '../../assets';
 import {MEAL_FILTERS, NEW_RECIPE} from '../../components/data';
 import {vh, vw} from '../../theme/dimensions';
 
-import { useDispatch, useSelector } from 'react-redux';
-import { addFavorite,removeFavorite } from '../../redux/configure/favouriteSlice';
-import { getAuth } from '@react-native-firebase/auth';
-import { getFirestore } from '@react-native-firebase/firestore';
+import {useDispatch, useSelector} from 'react-redux';
+import {
+  addFavorite,
+  removeFavorite,
+} from '../../redux/configure/favouriteSlice';
+import {getAuth} from '@react-native-firebase/auth';
+import {getFirestore} from '@react-native-firebase/firestore';
+import {
+  addFavoriteRecipe,
+  fetchFavoritesFromFirestore,
+  removeFavoriteRecipe,
+} from '../../redux/firebaseActions';
 
 const Home = () => {
   const navigation: any = useNavigation();
   const [recipes, setRecipes] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [name, setName] = useState('')
+  const [name, setName] = useState('');
   const dispatch = useDispatch();
   const favoriteItems = useSelector(state => state.favorites.items || []);
   console.log('Home favourite----->>', favoriteItems);
   const isFavorite = label => {
     const safeFavoriteItems = Array.isArray(favoriteItems) ? favoriteItems : [];
-    return safeFavoriteItems.some(item => item.recipe.label === label);
+    return safeFavoriteItems.some(item => item.recipe.recipe.label === label);
   };
 
   console.log('Is favourite----->>', isFavorite);
+
+  useEffect(() => {
+    dispatch(fetchFavoritesFromFirestore());
+    console.log('dispatch done>>>>>');
+  }, [dispatch]);
+
   useEffect(() => {
     getTrendyRecipes();
     // const checkAsyncStorage = async () => {
@@ -49,23 +63,23 @@ const Home = () => {
     //     console.error('Error reading AsyncStorage:', error);
     //   }
     // };
-    
+
     // checkAsyncStorage();
 
     const fetchname = async () => {
       const userId = getAuth().currentUser?.uid;
-     
+
       const userDoc = await getFirestore()
         .collection('users')
         .doc(userId)
         .get();
       console.log('userdoc---->>', userDoc);
-     
+
       const name = userDoc.data()?.name || '';
       setName(name);
     };
 
-    fetchname()
+    fetchname();
   }, []);
 
   const getTrendyRecipes = () => {
@@ -85,7 +99,6 @@ const Home = () => {
     )
       .then(response => response.json())
       .then(result => {
-        // console.log('Search Results:', result.hits); 
         setRecipes(result.hits);
         setLoading(false);
       })
@@ -93,18 +106,16 @@ const Home = () => {
   };
 
   const handlesaveToggle = item => {
-    if(isFavorite(item.recipe.label)){
-      dispatch(removeFavorite(item))
-    }else{
-      dispatch(addFavorite(item));
+    if (isFavorite(item.recipe.label)) {
+      dispatch(removeFavoriteRecipe(item));
+    } else {
+      dispatch(addFavoriteRecipe(item));
     }
-    
-   
   };
 
   return (
     <View style={styles.container}>
-      <StatusBar barStyle={'light-content'} />
+      <StatusBar barStyle={'light-content'}  />
 
       <View style={styles.topView}>
         <Image source={Images.top} style={styles.banner} />
@@ -112,8 +123,14 @@ const Home = () => {
         <View style={styles.transparentView}>
           <Text style={styles.logo}>Hello, {name.split(' ').shift()}</Text>
           <Text style={styles.cookText}>What are you cooking today?</Text>
-          <TouchableOpacity activeOpacity={0.8} style={styles.searchBox} onPress={() => navigation.navigate(ScreenNames.Search)}>
-            <Image source={Images.search} style={{height: vh(30), width: vw(30)}} />
+          <TouchableOpacity
+            activeOpacity={0.8}
+            style={styles.searchBox}
+            onPress={() => navigation.navigate(ScreenNames.Search)}>
+            <Image
+              source={Images.search}
+              style={{height: vh(30), width: vw(30)}}
+            />
             <Text style={styles.placeholder}>Please search here...</Text>
           </TouchableOpacity>
 
@@ -143,8 +160,7 @@ const Home = () => {
                     navigation.navigate(ScreenNames.Category, {
                       category: item,
                     });
-                  }}
-                  >
+                  }}>
                   <View style={styles.card}>
                     <Image source={item.icon} style={styles.categoryIcon} />
                   </View>
@@ -161,7 +177,7 @@ const Home = () => {
             data={recipes}
             renderItem={({item, index}) => {
               const favorite = isFavorite(item.recipe.label);
-              console.log("item.id",item.recipe.label)
+              console.log('item.id', item.recipe.label);
               return (
                 <View>
                   <TouchableOpacity
@@ -174,22 +190,39 @@ const Home = () => {
                     }}>
                     <View style={styles.flat}>
                       <Text style={styles.dish}>{item.recipe.label}</Text>
-                      <View style={{flexDirection:'row',justifyContent:'space-between',marginTop:vh(10),marginHorizontal:vw(10)}}>
-                     <View>
-                      <Text style={{color:'#A9A9A9'}}>Time</Text>
-                      <Text>15 mins</Text>
-                     </View>
-                     <TouchableOpacity onPress={() =>
-                      handlesaveToggle(item)
-                     }>
-                     <View style={{height:vh(28),width:vw(28),backgroundColor:'white',justifyContent:'center',alignItems:'center',borderRadius:vh(20)}}>
-                      <Image source={favorite?Images.active:Images.inactive} style={{height:vh(16),width:vw(16)}}/>
-                     </View>
-                     </TouchableOpacity>
-                    </View>
+                      <View
+                        style={{
+                          flexDirection: 'row',
+                          justifyContent: 'space-between',
+                          marginTop: vh(10),
+                          marginHorizontal: vw(10),
+                        }}>
+                        <View>
+                          <Text style={{color: '#A9A9A9'}}>Time</Text>
+                          <Text>15 mins</Text>
+                        </View>
+                        <TouchableOpacity
+                          onPress={() => handlesaveToggle(item)}>
+                          <View
+                            style={{
+                              height: vh(28),
+                              width: vw(28),
+                              backgroundColor: 'white',
+                              justifyContent: 'center',
+                              alignItems: 'center',
+                              borderRadius: vh(20),
+                            }}>
+                            <Image
+                              source={
+                                favorite ? Images.active : Images.inactive
+                              }
+                              style={{height: vh(16), width: vw(16)}}
+                            />
+                          </View>
+                        </TouchableOpacity>
+                      </View>
                     </View>
 
-                    
                     <View
                       style={{
                         position: 'absolute',
@@ -210,7 +243,6 @@ const Home = () => {
                         <Text style={styles.point}>4.2</Text>
                       </View>
                     </View>
-                  
                   </TouchableOpacity>
                 </View>
               );
@@ -339,22 +371,21 @@ const styles = StyleSheet.create({
   dish: {
     fontSize: 16,
     fontWeight: '500',
-    lineHeight:vh(22),
-    alignSelf:'center',
+    lineHeight: vh(22),
+    alignSelf: 'center',
     marginTop: vh(26),
     textAlign: 'center',
     paddingHorizontal: 10,
-    height:'35%'
+    height: '35%',
   },
   flat: {
     backgroundColor: '#D9D9D9',
     width: '100%',
-    
-    paddingTop:vh(20),
-    
+
+    paddingTop: vh(20),
+
     justifyContent: 'center',
     borderRadius: 12,
-    
   },
   container: {
     flex: 1,
@@ -362,14 +393,13 @@ const styles = StyleSheet.create({
   },
   topView: {
     height: '45%',
-    
   },
   banner: {
     height: '100%',
     width: '100%',
-    
-    borderBottomStartRadius:vh(15),
-    borderBottomEndRadius:vh(15)
+
+    borderBottomStartRadius: vh(15),
+    borderBottomEndRadius: vh(15),
   },
   transparentView: {
     height: '100%',
@@ -378,8 +408,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,.4)',
     justifyContent: 'center',
     alignItems: 'center',
-    borderBottomStartRadius:vh(15),
-    borderBottomEndRadius:vh(15)
+    borderBottomStartRadius: vh(15),
+    borderBottomEndRadius: vh(15),
   },
   searchBox: {
     width: '90%',
@@ -484,7 +514,6 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     alignItems: 'center',
 
-   
     borderRadius: 10,
   },
   scroll: {
