@@ -16,13 +16,13 @@ import {Images} from '../../assets';
 import {colors} from '../../theme';
 import {vh, vw} from '../../theme/dimensions';
 
-const Details = () => {
+const Details = (routes) => {
   const route = useRoute();
   const navigation = useNavigation();
   const [selectedTab, setSelectedTab] = useState(0);
   const [isTooltipVisible, setTooltipVisible] = useState(false);
   const [selectedOption, setSelectedOption] = useState('');
-
+  console.log("Routing",routes)
   const url = route.params.data.recipe;
 
   const handleOptionSelect = option => {

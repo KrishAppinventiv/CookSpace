@@ -7,40 +7,93 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Images} from '../../assets';
 import {useNavigation} from '@react-navigation/native';
 import {vh, vw} from '../../theme/dimensions';
 import {colors} from '../../theme';
+import { arrayUnion, doc, getDoc, getFirestore, updateDoc } from '@react-native-firebase/firestore';
+import { getAuth } from '@react-native-firebase/auth';
 const Notification = () => {
   const [selectedTab, setSelectedTab] = useState(0);
-
+  const [notifications, setNotifications] = useState([]);
+  const userId = getAuth().currentUser?.uid;
   const notifyData = [{
     head:'New Recipe Alert!',
     description: 'Lorem Ipsum tempor incididunt ut labore et dolore,in voluptate velit esse cillum',
-    time:12,
+    time:10,
+    status:'unread'
 
   },{
     head:'New Recipe Alert!',
     description: 'Lorem Ipsum tempor incididunt ut labore et dolore,in voluptate velit esse cillum',
-    time:12,
-
+    time:15,
+    status:'read'
   },{
     head:'New Recipe Alert!',
     description: 'Lorem Ipsum tempor incididunt ut labore et dolore,in voluptate velit esse cillum',
     time:12,
-
+    status:'read'
   },{
     head:'New Recipe Alert!',
     description: 'Lorem Ipsum tempor incididunt ut labore et dolore,in voluptate velit esse cillum',
     time:12,
-
+    status:'unread'
   },{
     head:'New Recipe Alert!',
     description: 'Lorem Ipsum tempor incididunt ut labore et dolore,in voluptate velit esse cillum',
     time:12,
-
+    status:'read'
   }];
+
+
+  useEffect(() => {
+  const storeNotification = async () => {
+    const db = getFirestore();
+    const userId = getAuth().currentUser?.uid;
+   
+    if (userId) {
+    try {
+      const userDocRef = doc(db, 'users', userId);  
+      await updateDoc(userDocRef, {
+        notifications:arrayUnion(...notifyData),  
+      });
+      console.log('Notification stored successfully!');
+    } catch (error) {
+      console.error('Error storing notification:', error);
+    }
+  } else {
+    console.log('User is not logged in');
+  }
+  };
+  storeNotification();
+}, []);
+
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      const db = getFirestore();
+      if (userId) {
+        try {
+      const userDocRef = doc(db, 'users', userId); 
+      const userDoc = await getDoc(userDocRef);
+
+      if (userDoc.exists) {
+        const userNotifications = userDoc.data().notifications || [];  
+        setNotifications(userNotifications);
+      } else {
+        console.log('User does not exist or has no notifications');
+      }
+    } catch (error) {
+      console.error('Error storing notification:', error);
+    }
+  } else {
+    console.log('User is not logged in');
+  }
+    };
+
+    fetchNotifications();
+  }, [userId]);
+  
   const today = new Date();
   const todayDate = today.toLocaleDateString();
   console.log(todayDate);
@@ -57,6 +110,14 @@ const Notification = () => {
   } else {
     displayDate = NotificationDate;
   }
+
+
+  const filteredNotifications = notifications.filter(item => {
+    if (selectedTab === 0) return true; 
+    if (selectedTab === 1 && item.status === 'read') return true; 
+    if (selectedTab === 2 && item.status === 'unread') return true; 
+    return false;
+  });
 
   const renderItem = ({item}) => <View style={styles.card}>
 
@@ -125,7 +186,7 @@ const Notification = () => {
       </View>
       <FlatList
         showsVerticalScrollIndicator={false}
-        data={notifyData}
+        data={notifications}
         renderItem={renderItem}
         keyExtractor={(item, index) => index.toString()}
       />

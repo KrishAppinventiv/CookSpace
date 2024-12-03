@@ -1,15 +1,17 @@
-import { StyleSheet, Text, TouchableOpacity, View,TextInput ,Image,Alert} from 'react-native'
-import React, { useState } from 'react'
+import { StyleSheet, Text, TouchableOpacity, View,TextInput ,Image,Alert,SafeAreaView} from 'react-native'
+import React, { useEffect, useRef, useState } from 'react'
 import { useNavigation } from '@react-navigation/native';
 import { Images } from '../../assets';
 import validator from 'validator';
 import { ScreenNames } from '../../navigator/screenNames';
 import auth from '@react-native-firebase/auth';
 import { getFirestore , FieldValue} from '@react-native-firebase/firestore';
+import { vh } from '../../theme/dimensions';
+
 
 
 const Signup = () => {
-
+    
 
     const [Email, SetEmail] = useState("");
     const [Name, SetName] = useState("");
@@ -17,9 +19,16 @@ const Signup = () => {
     const [CnfrmPassword, SetCnfrmPassword] = useState("");
     const [emailError, setEmailError] = useState('');
     const [passwordError, setPasswordError] = useState('');
+    const [cnfrmpasswordError, cnfrmSetPasswordError] = useState('');
     const [accountError, setAccountError] = useState(false);
     const navigation = useNavigation();
+     
 
+    const nameInputRef = useRef(null);
+    const emailInputRef = useRef(null);
+    const confrmpasswordInputRef = useRef(null);
+    const passwordInputRef = useRef(null);
+    
     const validateEmail = (email) => {
 
         if (!validator.isEmail(email)) {
@@ -36,6 +45,14 @@ const Signup = () => {
         
         return true;
     };
+
+
+    useEffect(() => {
+    
+        nameInputRef.current?.focus();
+        
+    
+      }, []);
 
     const validatePassword = (password) => {
         if (password.length < 6) {
@@ -78,7 +95,6 @@ const Signup = () => {
         console.log(firestore); 
     
         try {
-          
             const userCredential = await auth().createUserWithEmailAndPassword(Email, Password);
             console.log("User created successfully");
     
@@ -122,7 +138,7 @@ const Signup = () => {
         }
     }; 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       
       <View style={styles.signupContainer}>
             
@@ -142,11 +158,13 @@ const Signup = () => {
                 
                 <View style={styles.inputContainer}>
                         <TextInput
+                            ref={nameInputRef}
                             placeholder="Name"
                             style={styles.input}
                             value={Name}
-
+                            autoFocus={true} 
                             onChangeText={(text) => handleTextChange(text, 'name')}
+                            returnKeyType="next" 
                         />
 
                         {emailError ? <Text style={styles.errorText}>{emailError}</Text> : null}
@@ -157,8 +175,10 @@ const Signup = () => {
                             placeholder="Email Address"
                             style={styles.input}
                             value={Email}
-
+                            ref={emailInputRef}
                             onChangeText={(text) => handleTextChange(text, 'email')}
+                             autoCapitalize="none"
+                             returnKeyType="next" 
                         />
 
                         {emailError ? <Text style={styles.errorText}>{emailError}</Text> : null}
@@ -171,8 +191,10 @@ const Signup = () => {
                                 placeholder="Password"
                                 style={styles.input}
                                 value={Password}
-
+                                ref={passwordInputRef}
                                 onChangeText={(text) => handleTextChange(text, 'password')}
+                                 autoCapitalize="none"
+                                 returnKeyType="next" 
                             />
                             <TouchableOpacity>
                                 <Image source={Images.eye} style={styles.img2} />
@@ -185,14 +207,16 @@ const Signup = () => {
                     </View>
 
 
-                    <View style={styles.inputContainer1}>
+                    <View style={[styles.inputContainer1, cnfrmpasswordError && { borderColor: 'red' }]}>
                         <View style={styles.passwordContain}>
                             <TextInput
                                 placeholder="Confirm Password"
                                 style={styles.input}
                                 value={CnfrmPassword}
-
+                                ref={confrmpasswordInputRef}
                                 onChangeText={(text) => handleTextChange(text, 'cnfrmPassword')}
+                                 autoCapitalize="none"
+                                
                             />
                             <TouchableOpacity>
                                 <Image source={Images.eye} style={styles.img2} />
@@ -201,7 +225,7 @@ const Signup = () => {
                         </View>
 
 
-                        {passwordError ? <Text style={styles.errorText}>{passwordError}</Text> : null}
+                        {cnfrmpasswordError ? <Text style={styles.errorText}>{cnfrmpasswordError}</Text> : null}
                     </View>
 
 
@@ -246,16 +270,16 @@ const Signup = () => {
                 </View>
 
 
-                <View style={{flexDirection:'row',justifyContent:'center',marginTop:60}}>
+                <View style={{flexDirection:'row',justifyContent:'center',marginTop:vh(30)}}>
                     <Text>Already have an account?</Text>      
-                    <TouchableOpacity>
+                    <TouchableOpacity onPress={() => navigation.navigate(ScreenNames.Signin)}>
                     <Text style={{color:'#FF9C00'}}> Sign In</Text>     
                         </TouchableOpacity>  
                     
                 </View>                                
 
             </View>
-    </View>
+    </SafeAreaView>
   )
 }
 
@@ -316,7 +340,7 @@ const styles = StyleSheet.create({
         borderColor: "#ccc",
         borderWidth: 1,
         backgroundColor: 'white',
-        marginBottom: 35
+        marginBottom: vh(25)
 
     },
 
@@ -377,7 +401,7 @@ const styles = StyleSheet.create({
     
     signupContainer: {
         flex: 1,
-        marginTop:30
+        marginTop:vh(10)
     },
     errorContain:{
         height: 65,
@@ -421,7 +445,8 @@ const styles = StyleSheet.create({
         
         marginTop:17,
         marginBottom:10
-    }
+    },
+    
 
 
 })

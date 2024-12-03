@@ -1,5 +1,6 @@
 import {StyleSheet} from 'react-native';
 import { vh, vw } from '../../theme/dimensions';
+import { colors } from '../../theme';
 
 export default StyleSheet.create({
     signupColor: {
@@ -16,7 +17,7 @@ export default StyleSheet.create({
         marginRight:vw(6)
       },
       googleView: {
-        height:vh(54),
+       
        
         elevation:2,
         justifyContent:'center',
@@ -27,7 +28,7 @@ export default StyleSheet.create({
         shadowRadius: 3,
         backgroundColor:'white',
         borderRadius:10,
-        padding:20,
+        padding:15,
       },
       otherOption: {
        alignItems:'center',
@@ -163,7 +164,7 @@ export default StyleSheet.create({
         
         signupContainer: {
             flex: 1,
-            marginTop:80
+            marginTop:vh(25)
         },
         errorContain:{
             height: 65,
@@ -207,5 +208,52 @@ export default StyleSheet.create({
             
             marginTop:17,
             marginBottom:10
-        }
+        },
+        modalContainer: {
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
+            backgroundColor: 'rgba(0,0,0,0.5)',
+          },
+          modalContent: {
+           
+            padding: vh(20),
+            marginHorizontal:vw(30),
+            backgroundColor: 'white',
+            borderRadius: 10,
+          },
+          modalTitle: {
+            fontSize: vh(20),
+            fontWeight: 'bold',
+            marginBottom: 10,
+          },
+          modalText: {
+            fontSize: vh(14),
+            color: '#A9A9A9',
+            marginBottom: 20,
+          },
+          modalInput: {
+            marginBottom: 15,
+          },
+          resetButton: {
+            backgroundColor: colors.main,
+            paddingVertical: 10,
+            borderRadius: 5,
+            marginBottom: 10,
+          },
+          resetButtonText: {
+            color: 'white',
+            fontSize: vh(16),
+            textAlign: 'center',
+          },
+          cancelButton: {
+            backgroundColor: '#DCDCDC',
+            paddingVertical: 10,
+            borderRadius: 5,
+          },
+          cancelButtonText: {
+            color: '#555',
+            fontSize: vh(16),
+            textAlign: 'center',
+          },
 })

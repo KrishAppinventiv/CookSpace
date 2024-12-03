@@ -18,7 +18,8 @@ import {colors} from '../../theme';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import {useSelector} from 'react-redux';
 import {ScreenNames} from '../../navigator/screenNames';
-import {getStorage} from '@react-native-firebase/storage';
+
+
 import {getFirestore} from '@react-native-firebase/firestore';
 import {getAuth, signOut} from '@react-native-firebase/auth';
 
@@ -41,16 +42,16 @@ const Profile = () => {
  const renderItem = ({item}) => 
       
   {
-    const recipe = item.recipe; 
-    console.log("gughushu", recipe.recipe.source)
+    const recipe = item
+    console.log("gughushu", item)
     return (
     <TouchableOpacity activeOpacity={.8} onPress={() => {
-      navigation.navigate(ScreenNames.Details, {
-        data: recipe, 
-      });
+      // navigation.navigate(ScreenNames.Details, {
+      //   data: recipe, 
+      // });
     }}>
   <View style={styles.card}>
-    <Image source={{uri:recipe.recipe.image}} style={styles.recipeImage} />
+    <Image source={{uri:item.imageUrl}} style={styles.recipeImage} />
 
   
     <View style={styles.transparentView}>
@@ -59,8 +60,8 @@ const Profile = () => {
       <Image source={Images.star} style={{height: 15, width: 15}} />
       <Text style={styles.point}>4.2</Text>
     </View>
-      <Text style={styles.recipeTitle}>{recipe.recipe.label}</Text>
-      <Text style={styles.recipeSource}>{recipe.recipe.source}</Text>
+      <Text style={styles.recipeTitle}>{item.title}</Text>
+      {/* <Text style={styles.recipeSource}>{recipe.recipe.source}</Text> */}
      
     </View>
 
@@ -148,14 +149,18 @@ const Profile = () => {
       setUserProfilePic(profilePic);
       const name = userDoc.data()?.name || '';
       setName(name);
+
+      const postData = userDoc.data()?.postData || [];
+        setRecipes(postData);
+        setLoading(false);
     };
     fetchProfilePic();
   }, []);
 
-  useEffect(() => {
-    setRecipes(favoriteItems);
-    setLoading(false);
-  }, [favoriteItems]);
+  // useEffect(() => {
+  //   setRecipes(favoriteItems);
+  //   setLoading(false);
+  // }, [favoriteItems]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -172,14 +177,15 @@ const Profile = () => {
       <View style={{flexDirection: 'row', marginHorizontal: vw(10)}}>
         <View
           style={{
-            borderRadius: vh(60),
-            height: vh(102),
-            width: vw(102),
-            borderWidth: 3,
-            borderColor: colors.main,
+            borderRadius:vh(55),
+            height: vh(110),
+            width: vh(110),
+            borderColor:colors.main,
+            borderWidth:3,
             justifyContent: 'center',
             alignItems: 'center',
             opacity: 0.9,
+            
           }}>
           <TouchableOpacity
             activeOpacity={0.7}
@@ -187,16 +193,18 @@ const Profile = () => {
             {imgUri || userProfilePic ? (
               <Image
                 source={{uri: imgUri ? url : userProfilePic}}
-                style={{width: vw(99), height: vh(99), borderRadius: vh(60)}}
+                style={{width: vh(99), height: vh(99),borderRadius:vh(50),}}
                 resizeMode="cover"
               />
             ) : (
               <Image
                 source={Images.dp}
-                style={{width: vw(99), height: vh(99), borderRadius: vh(60)}}
+                style={{width: vh(99), height: vh(99),borderRadius:vh(50),}}
                 resizeMode="cover"
               />
             )}
+
+           
           </TouchableOpacity>
         </View>
         <View
@@ -384,12 +392,12 @@ const Profile = () => {
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.tooltipItem}
-              onPress={() => handleOptionSelect('Rate Recipe')}>
+              onPress={() => handleOptionSelect('Privacy')}>
               <Image
                 source={Images.stars}
                 style={{marginRight: vw(14), height: vh(20), width: vw(20)}}
               />
-              <Text style={styles.tooltipText}>Rate Recipe</Text>
+              <Text style={styles.tooltipText}>Privacy</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.tooltipItem}
@@ -398,7 +406,7 @@ const Profile = () => {
                 source={Images.message}
                 style={{marginRight: vw(14), height: vh(20), width: vw(20)}}
               />
-              <Text style={styles.tooltipText}>Review</Text>
+              <Text style={styles.tooltipText}>Diactivate</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.tooltipItem}

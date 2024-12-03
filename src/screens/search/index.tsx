@@ -10,7 +10,7 @@ import {
   ActivityIndicator,
   FlatList,
 } from 'react-native';
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import {Images} from '../../assets';
 import {vh, vw} from '../../theme/dimensions';
 import {colors} from '../../theme';
@@ -34,10 +34,20 @@ const Search = () => {
   const [selectedCusiness, setSelectedCusiness] = useState('');
   const [selectedHealth, setSelectedHealth] = useState('');
   const [selectedDiet, setSelectedDiet] = useState('');
+  const searchInputRef = useRef(null);
 
   const [ShowModal, setShowModal] = useState(false);
 
   const navigation: any = useNavigation();
+
+
+
+  useEffect(() => {
+    
+    searchInputRef.current?.focus();
+    
+
+  }, []);
 
   const searchRecipe = () => {
     if (!search) return;
@@ -188,10 +198,12 @@ const Search = () => {
             style={{height: vh(25), width: vw(25), tintColor: '#D9D9D9'}}
           />
           <TextInput
+            ref={searchInputRef}
             value={search}
             onChangeText={setSearch}
             placeholder="Search recipe"
             style={{fontSize: 17, marginHorizontal: 10}}
+            autoFocus={true}
           />
         </View>
 

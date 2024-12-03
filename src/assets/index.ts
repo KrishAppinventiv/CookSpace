@@ -60,7 +60,9 @@ const Images = {
   logout: require('./images/logout.png'),
   addphoto: require('./images/AddPhoto.png'),
   cancel: require('./images/cancel.png'),
-  gallery: require('./images/gallery.png')
+  gallery: require('./images/gallery.png'),
+  hide: require('./images/hide.png'),
+  plus: require('./images/plus.png'),
 }; 
 
 export {Images};

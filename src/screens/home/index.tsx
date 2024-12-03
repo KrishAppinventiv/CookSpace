@@ -229,6 +229,7 @@ const Home = () => {
                         top: 1,
                         shadowColor: 'rgba(0,0,0,.3)',
                         shadowOpacity: 10,
+                        elevation:10
                       }}>
                       <Image
                         source={{uri: item.recipe.image}}
@@ -324,6 +325,7 @@ const Home = () => {
                         right: 1,
                         shadowColor: 'rgba(0,0,0,.6)',
                         shadowOpacity: 10,
+                        elevation:10
                       }}>
                       <Image
                         source={item.icon}
@@ -469,6 +471,7 @@ const styles = StyleSheet.create({
     padding: 20,
     shadowColor: 'rgba(0,0,0,.3)',
     shadowOpacity: 6,
+    elevation:10,
     backgroundColor: 'white',
     justifyContent: 'center',
     alignItems: 'center',
@@ -479,7 +482,7 @@ const styles = StyleSheet.create({
     shadowColor: 'rgba(0,0,0,.3)',
     shadowOpacity: 6,
     backgroundColor: 'white',
-
+    elevation:10,
     justifyContent: 'center',
     borderRadius: 10,
   },
@@ -489,15 +492,17 @@ const styles = StyleSheet.create({
   },
   trendyIcon: {
     marginTop: 5,
-    width: 130,
-    height: 130,
+    width: 120,
+    height: 120,
     borderRadius: 60,
+    elevation:10
   },
   newIcon: {
     marginTop: 5,
     width: 100,
     height: 100,
     borderRadius: 50,
+    elevation:10
   },
   category: {
     fontSize: 18,

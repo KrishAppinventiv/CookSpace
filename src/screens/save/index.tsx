@@ -5,6 +5,7 @@ import { useNavigation } from '@react-navigation/native'
 import { vh, vw } from '../../theme/dimensions'
 import { useSelector } from 'react-redux'
 import { ScreenNames } from '../../navigator/screenNames'
+import { colors } from '../../theme'
 
 const Save = () => {
     const navigation:any = useNavigation();
@@ -64,8 +65,8 @@ const Save = () => {
         Saved Recipes
       </Text>
     </View>
-    
-    <View
+    {favoriteItems.length==0 ? <View style={{justifyContent:"center",alignItems:'center',flex:1,marginHorizontal:vw(30),}}> <Text style={{textAlign:'center', fontSize:vh(18),fontWeight:'500',color:colors.main}}>YOUR SAVED RECIPE IS CURRENTLY EMPTY....</Text>
+    </View>: <View
         style={{
           marginTop: vh(20),
           marginHorizontal: vw(20),
@@ -83,7 +84,8 @@ const Save = () => {
            
           />
         {/* )} */}
-      </View>
+      </View>}
+   
     </SafeAreaView>
   )
 }
