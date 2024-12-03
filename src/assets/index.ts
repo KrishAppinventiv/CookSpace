@@ -63,6 +63,7 @@ const Images = {
   gallery: require('./images/gallery.png'),
   hide: require('./images/hide.png'),
   plus: require('./images/plus.png'),
+  serving: require('./images/serving.png'),
 }; 
 
 export {Images};

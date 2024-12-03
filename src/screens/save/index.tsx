@@ -65,7 +65,9 @@ const Save = () => {
         Saved Recipes
       </Text>
     </View>
-    {favoriteItems.length==0 ? <View style={{justifyContent:"center",alignItems:'center',flex:1,marginHorizontal:vw(30),}}> <Text style={{textAlign:'center', fontSize:vh(18),fontWeight:'500',color:colors.main}}>YOUR SAVED RECIPE IS CURRENTLY EMPTY....</Text>
+    {favoriteItems.length==0 ? <View style={{justifyContent:"center",alignItems:'center',flex:1,marginHorizontal:vw(30),}}> 
+        <Image source={Images.serving} style={{height:vh(140),width:vh(140)}}/>
+      <Text style={{textAlign:'center', fontSize:vh(18),fontWeight:'500',color:colors.main,marginTop:vh(20),fontFamily:'Poppins'}}>Your Saved Recipe Is Currently Empty</Text>
     </View>: <View
         style={{
           marginTop: vh(20),
