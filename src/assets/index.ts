@@ -64,6 +64,9 @@ const Images = {
   hide: require('./images/hide.png'),
   plus: require('./images/plus.png'),
   serving: require('./images/serving.png'),
+  bookmark: require('./images/bookmark.png'),
+  delete: require('./images/delete.png'),
+  privacy: require('./images/privacy.png'),
 }; 
 
 export {Images};

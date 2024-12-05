@@ -15,27 +15,26 @@ import {contains} from 'validator';
 import {Images} from '../../assets';
 import {colors} from '../../theme';
 import {vh, vw} from '../../theme/dimensions';
+import {ScreenNames} from '../../navigator/screenNames';
 
-const Details = (routes) => {
+const Details = () => {
   const route = useRoute();
   const navigation = useNavigation();
   const [selectedTab, setSelectedTab] = useState(0);
-  const [isTooltipVisible, setTooltipVisible] = useState(false);
-  const [selectedOption, setSelectedOption] = useState('');
-  console.log("Routing",routes)
-  const url = route.params.data.recipe;
+  
 
-  const handleOptionSelect = option => {
-    // setSelectedOption(option);
-    setTooltipVisible(false);
-    console.log(option);
-  };
+  let data;
+
+  data = route.params?.data || {};
+
+  console.log(data);
+
+  
   return (
     <View style={styles.container}>
-      
       <View style={styles.headDish}>
         <Image
-          source={{uri: url.image}}
+          source={{uri: data.recipe.image}}
           style={styles.banner}
           resizeMode="cover"
         />
@@ -44,18 +43,7 @@ const Details = (routes) => {
             <View style={styles.ImageView}>
               <Image source={Images.left} style={styles.back} />
             </View>
-            <TouchableOpacity onPress={() => setTooltipVisible(true)}>
-              <Image
-                source={Images.options}
-                style={{
-                  height: 30,
-                  width: 30,
-                  position: 'absolute',
-                  top: vh(47),
-                  right: vw(20),
-                }}
-              />
-            </TouchableOpacity>
+            
           </TouchableOpacity>
           <View style={styles.timeView}>
             <View style={styles.minView}>
@@ -64,7 +52,9 @@ const Details = (routes) => {
                 tintColor="white"
                 style={styles.timer}
               />
-              <Text style={styles.prepare}>20 min</Text>
+              <Text style={styles.prepare}>
+                {data.recipe.cook ? data.recipe.cook : '20 min'}
+              </Text>
             </View>
 
             <View style={styles.saveView}>
@@ -74,66 +64,12 @@ const Details = (routes) => {
         </View>
       </View>
 
-      {isTooltipVisible && (
-        <Modal
-          transparent={true}
-          animationType="fade"
-          visible={isTooltipVisible}
-          onRequestClose={() => setTooltipVisible(false)}>
-          <TouchableWithoutFeedback onPress={() => setTooltipVisible(false)}>
-            <View style={styles.modalBackground} />
-          </TouchableWithoutFeedback>
-
-          <View style={styles.tooltipContainer}>
-            <TouchableOpacity
-              style={styles.tooltipItem}
-              onPress={() => handleOptionSelect('Share')}>
-              <Image
-                source={Images.share}
-                style={{marginRight: vw(14), height: vh(14), width: vw(20)}}
-              />
-              <Text style={styles.tooltipText}>Share</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.tooltipItem}
-              onPress={() => handleOptionSelect('Rate Recipe')}>
-              <Image
-                source={Images.stars}
-                style={{marginRight: vw(14), height: vh(20), width: vw(20)}}
-              />
-              <Text style={styles.tooltipText}>Rate Recipe</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.tooltipItem}
-              onPress={() => handleOptionSelect('Review')}>
-              <Image
-                source={Images.message}
-                style={{marginRight: vw(14), height: vh(20), width: vw(20)}}
-              />
-              <Text style={styles.tooltipText}>Review</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.tooltipItem}
-              onPress={() => handleOptionSelect('Unsave')}>
-              <Image
-                source={Images.unsave}
-                style={{marginRight: vw(14), height: vh(20), width: vw(20)}}
-              />
-              <Text style={styles.tooltipText}>Unsave</Text>
-            </TouchableOpacity>
-          </View>
-        </Modal>
-      )}
+     
 
       <View style={styles.main}>
         <Text
-          style={{
-            fontSize: 22,
-            fontWeight: '600',
-            color: 'black',
-            width: '60%',
-          }}>
-          {url.label}
+          style={styles.labelText}>
+          {data.recipe.label}
         </Text>
         <Text
           style={{
@@ -146,7 +82,7 @@ const Details = (routes) => {
         </Text>
       </View>
 
-      <View style={styles.mainContain}>
+      {data.recipe.source?<View style={styles.mainContain}>
         <View style={styles.chefContain}>
           <Image
             source={Images.chefpic}
@@ -155,7 +91,7 @@ const Details = (routes) => {
           />
 
           <View style={styles.left}>
-            <Text style={styles.chef}>{url.source}</Text>
+            <Text style={styles.chef}>{data.recipe.source}</Text>
             <View style={styles.locView}>
               <Image source={Images.location} style={styles.locImg} />
               <Text style={styles.locText}>Lagos,Nigeria</Text>
@@ -166,7 +102,7 @@ const Details = (routes) => {
         <View style={styles.followView}>
           <Text style={styles.followText}>Follow</Text>
         </View>
-      </View>
+      </View>:null}
       <View>
         <FlatList
           data={[
@@ -214,20 +150,18 @@ const Details = (routes) => {
       <FlatList
         data={
           selectedTab == 0
-            ? url.healthLabels
+            ? data.recipe.healthLabels
             : selectedTab == 1
-            ? url.cautions
+            ? data.recipe.cautions
             : selectedTab == 2
-            ? url.ingredientLines
+            ? data.recipe.ingredientLines
             : selectedTab == 3
-            ? url.dietLabels
+            ? data.recipe.dietLabels
             : selectedTab == 4
-            ? url.mealType
-            : selectedTab == 4
-            ? url.mealType
+            ? data.recipe.mealType
             : selectedTab == 5
-            ? url.cuisineType
-            : url.dishType
+            ? data.recipe.cuisineType
+            : data.recipe.dishType
         }
         renderItem={({item, index}) => {
           const capitalizeAfterSlash = str => {
@@ -238,15 +172,10 @@ const Details = (routes) => {
 
           const capitalizedItem = capitalizeAfterSlash(item);
           return (
-            <View style={{marginHorizontal: vw(20), marginTop: vh(8)}}>
+            <View style={styles.flatView}>
               <View style={styles.ingredient}>
                 <Text
-                  style={{
-                    marginStart: vw(20),
-                    fontSize: vh(16),
-                    fontWeight: '600',
-                    color: '#235347',
-                  }}>
+                  style={styles.flatText}>
                   {capitalizedItem}
                 </Text>
               </View>
@@ -261,6 +190,22 @@ const Details = (routes) => {
 export default Details;
 
 const styles = StyleSheet.create({
+  flatView: {
+    marginHorizontal: vw(20),
+    marginTop: vh(8),
+  },
+  flatText: {
+    marginStart: vw(20),
+    fontSize: vh(16),
+    fontWeight: '600',
+    color: '#235347',
+  },
+  labelText: {
+    fontSize: 22,
+    fontWeight: '600',
+    color: 'black',
+    width: '60%',
+  },
   ingredient: {
     backgroundColor: '#D9D9D9',
     marginBottom: vh(10),

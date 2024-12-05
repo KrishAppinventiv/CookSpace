@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {Images} from '../../assets';
-import {useNavigation} from '@react-navigation/native';
+import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import {vh, vw} from '../../theme/dimensions';
 import {colors} from '../../theme';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
@@ -35,23 +35,22 @@ const Profile = () => {
   const [isTooltipVisible, setTooltipVisible] = useState(false);
   const favoriteItems = useSelector(state => state.favorites.items);
   console.log('favourite----->>>', favoriteItems);
- console.log("profile recipe", favoriteItems)
 
 
 
  const renderItem = ({item}) => 
       
   {
-    const recipe = item
+    
     console.log("gughushu", item)
     return (
     <TouchableOpacity activeOpacity={.8} onPress={() => {
-      // navigation.navigate(ScreenNames.Details, {
-      //   data: recipe, 
-      // });
+      navigation.navigate(ScreenNames.Details, {
+        data: item, 
+      });
     }}>
   <View style={styles.card}>
-    <Image source={{uri:item.imageUrl}} style={styles.recipeImage} />
+    <Image source={{uri:item.recipe.image}} style={styles.recipeImage} />
 
   
     <View style={styles.transparentView}>
@@ -60,8 +59,8 @@ const Profile = () => {
       <Image source={Images.star} style={{height: 15, width: 15}} />
       <Text style={styles.point}>4.2</Text>
     </View>
-      <Text style={styles.recipeTitle}>{item.title}</Text>
-      {/* <Text style={styles.recipeSource}>{recipe.recipe.source}</Text> */}
+      <Text style={styles.recipeTitle}>{item.recipe.label}</Text>
+     
      
     </View>
 
@@ -133,35 +132,33 @@ const Profile = () => {
     });
   };
   useEffect(() => {
-    const fetchProfilePic = async () => {
+   
       const userId = getAuth().currentUser?.uid;
       if (!userId) {
         console.log('User is not authenticated');
         return;
       }
 
-      const userDoc = await getFirestore()
-        .collection('users')
-        .doc(userId)
-        .get();
-      console.log('userdoc---->>', userDoc);
-      const profilePic = userDoc.data()?.profilePic || '';
-      setUserProfilePic(profilePic);
-      const name = userDoc.data()?.name || '';
-      setName(name);
+      const unsubscribe = getFirestore()
+      .collection('users')
+      .doc(userId)
+      .onSnapshot((userDoc) => {
+        const profilePic = userDoc.data()?.profilePic || '';
+        const name = userDoc.data()?.name || '';
+        const postData = userDoc.data()?.postData || [];
+        console.log("profile  --->>>",profilePic)
+        setUserProfilePic(profilePic);
+        setName(name);
+        setRecipes(postData); 
+        setLoading(false); 
+      });
 
-      const postData = userDoc.data()?.postData || [];
-        setRecipes(postData);
-        setLoading(false);
-    };
-    fetchProfilePic();
+   
+    return () => unsubscribe();
+   
   }, []);
 
-  // useEffect(() => {
-  //   setRecipes(favoriteItems);
-  //   setLoading(false);
-  // }, [favoriteItems]);
-
+  
   return (
     <SafeAreaView style={styles.container}>
       <View style={{alignItems: 'flex-end', marginEnd: 20}}>
@@ -192,7 +189,7 @@ const Profile = () => {
             onPress={() => handleUploadFromGallery()}>
             {imgUri || userProfilePic ? (
               <Image
-                source={{uri: imgUri ? url : userProfilePic}}
+                source={{uri: userProfilePic}}
                 style={{width: vh(99), height: vh(99),borderRadius:vh(50),}}
                 resizeMode="cover"
               />
@@ -357,7 +354,8 @@ const Profile = () => {
           {recipes.length == 0 ? (
             <View
               style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-              <Text>No Recipes Yet</Text>
+                <Image source={Images.serving} style={{height:vh(100),width:vh(100)}}/>
+                <Text style={{textAlign:'center', fontSize:vh(24),fontWeight:'600',color:colors.main,marginTop:vh(20),fontFamily:'Poppins'}}>No Recipes Yet..</Text>
             </View>
           ) : (
             <FlatList
@@ -394,16 +392,16 @@ const Profile = () => {
               style={styles.tooltipItem}
               onPress={() => handleOptionSelect('Privacy')}>
               <Image
-                source={Images.stars}
+                source={Images.privacy}
                 style={{marginRight: vw(14), height: vh(20), width: vw(20)}}
               />
               <Text style={styles.tooltipText}>Privacy</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.tooltipItem}
-              onPress={() => handleOptionSelect('Review')}>
+              onPress={() => handleOptionSelect('Diactivate')}>
               <Image
-                source={Images.message}
+                source={Images.delete}
                 style={{marginRight: vw(14), height: vh(20), width: vw(20)}}
               />
               <Text style={styles.tooltipText}>Diactivate</Text>

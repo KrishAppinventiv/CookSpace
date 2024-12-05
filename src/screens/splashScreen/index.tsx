@@ -18,35 +18,19 @@ const SplashScreen = () => {
       useNativeDriver: false,
     }).start();
 
-  const navigateTo = (screenNames: any, params?: any) => {
-    navigation.dispatch(
-      CommonActions.reset({
-        index: 1,
-        routes: [{name: screenNames, params}],
-      }),
-    );
-  };
-
+  
   useEffect(() => {
     Splash.hide();
-    
-   
     viewAnimate();
     setTimeout(() => {
       if (true) {
-        // navigation.navigate(ScreenNames.BottomTab);
-        // navigateTo(ScreenNames.Tutorial);
-        // navigateTo(ScreenNames.BottomTab, {screen: ScreenNames.Profile});
+     
         const checkAuthStatus = async () => {
           const user = getAuth().currentUser; 
           if (user) {
             
-            console.log('User UID:', user.uid);
-            
-          
-            const userDoc = await getFirestore().collection('users').doc(user.uid).get();
-           
-              navigation.replace(ScreenNames.BottomTab);  
+            console.log('User UID:', user.uid);  
+            navigation.replace(ScreenNames.BottomTab);  
             
           } else {
           
@@ -62,26 +46,7 @@ const SplashScreen = () => {
   }, []);
 
 
-  // useEffect(() => {
-  //   const checkAuthStatus = async () => {
-  //     const user = getAuth().currentUser; 
-  //     if (user) {
-        
-  //       console.log('User UID:', user.uid);
-        
-      
-  //       const userDoc = await getFirestore().collection('users').doc(user.uid).get();
-       
-  //         navigation.replace(ScreenNames.BottomTab);  
-        
-  //     } else {
-      
-  //       navigation.replace(ScreenNames.Signin);
-  //     }
-  //   };
-
-  //   checkAuthStatus();
-  // }, [navigation]);
+  
   return (
     <Animated.View
       style={[styles.containers, {opacity: fadeAnim}]}

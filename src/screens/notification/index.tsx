@@ -12,7 +12,7 @@ import {Images} from '../../assets';
 import {useNavigation} from '@react-navigation/native';
 import {vh, vw} from '../../theme/dimensions';
 import {colors} from '../../theme';
-import { arrayUnion, doc, getDoc, getFirestore, updateDoc } from '@react-native-firebase/firestore';
+import { arrayUnion, doc, getDoc, getFirestore, onSnapshot, updateDoc } from '@react-native-firebase/firestore';
 import { getAuth } from '@react-native-firebase/auth';
 const Notification = () => {
   const [selectedTab, setSelectedTab] = useState(0);
@@ -47,16 +47,35 @@ const Notification = () => {
   }];
 
 
-  useEffect(() => {
-  const storeNotification = async () => {
-    const db = getFirestore();
-    const userId = getAuth().currentUser?.uid;
+//   useEffect(() => {
+//   const storeNotification = async () => {
+//     const db = getFirestore();
+//     const userId = getAuth().currentUser?.uid;
    
-    if (userId) {
+//     if (userId) {
+//     try {
+//       const userDocRef = doc(db, 'users', userId);  
+//       await updateDoc(userDocRef, {
+//         notifications:arrayUnion(...notifyData),  
+//       });
+//       console.log('Notification stored successfully!');
+//     } catch (error) {
+//       console.error('Error storing notification:', error);
+//     }
+//   } else {
+//     console.log('User is not logged in');
+//   }
+//   };
+//   storeNotification();
+// }, []);
+
+const storeNotification = async (notification) => {
+  const db = getFirestore();
+  if (userId) {
     try {
-      const userDocRef = doc(db, 'users', userId);  
+      const userDocRef = doc(db, 'users', userId);
       await updateDoc(userDocRef, {
-        notifications:arrayUnion(...notifyData),  
+        notifications: arrayUnion(notification),
       });
       console.log('Notification stored successfully!');
     } catch (error) {
@@ -65,33 +84,44 @@ const Notification = () => {
   } else {
     console.log('User is not logged in');
   }
-  };
-  storeNotification();
+};
+
+
+useEffect(() => {
+  const interval = setInterval(() => {
+    const randomNotification = notifyData[Math.floor(Math.random() * notifyData.length)];
+    storeNotification(randomNotification);
+  }, 5000);
+
+  return () => clearInterval(interval); 
 }, []);
 
+  
+
+
   useEffect(() => {
-    const fetchNotifications = async () => {
+    const fetchNotifications = () => {
       const db = getFirestore();
       if (userId) {
-        try {
-      const userDocRef = doc(db, 'users', userId); 
-      const userDoc = await getDoc(userDocRef);
+        const userDocRef = doc(db, 'users', userId);
 
-      if (userDoc.exists) {
-        const userNotifications = userDoc.data().notifications || [];  
-        setNotifications(userNotifications);
-      } else {
-        console.log('User does not exist or has no notifications');
+        // Listen for real-time changes in the notifications field
+        const unsubscribe = onSnapshot(userDocRef, (docSnapshot) => {
+          if (docSnapshot.exists) {
+            const notifications = docSnapshot.data().notifications || [];
+            setNotifications(notifications); // Update state with new notifications
+          }
+        });
+
+        return unsubscribe; // Return the unsubscribe function to stop listening when component unmounts
       }
-    } catch (error) {
-      console.error('Error storing notification:', error);
-    }
-  } else {
-    console.log('User is not logged in');
-  }
     };
 
-    fetchNotifications();
+    const unsubscribe = fetchNotifications(); // Start listening
+
+    return () => {
+      if (unsubscribe) unsubscribe(); // Clean up the listener
+    };
   }, [userId]);
   
   const today = new Date();
@@ -119,7 +149,7 @@ const Notification = () => {
     return false;
   });
 
-  const renderItem = ({item}) => <View style={styles.card}>
+  const renderItem = ({item}) => (<View style={styles.card}>
 
   
   <View style={{width:'95%'}}>
@@ -131,7 +161,15 @@ const Notification = () => {
   <Image source={Images.docnotify}/>
   </View>
 
-  </View>;
+  </View>);
+
+
+const handleTabPress = (index) => {
+  setSelectedTab(index);
+};
+
+
+
   return (
     <SafeAreaView style={styles.container}>
       <View >
@@ -182,11 +220,11 @@ const Notification = () => {
 
           borderRadius: 5,
         }}>
-        <Text style={{fontSize: vh(15), fontWeight: '600'}}>{displayDate}</Text>
+        <Text style={{fontSize: vh(15), fontWeight: '600'}}>{todayDate}</Text>
       </View>
       <FlatList
         showsVerticalScrollIndicator={false}
-        data={notifications}
+        data={filteredNotifications}
         renderItem={renderItem}
         keyExtractor={(item, index) => index.toString()}
       />

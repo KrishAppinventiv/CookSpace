@@ -7,6 +7,7 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  Alert
 } from 'react-native';
 import React, {useRef, useState} from 'react';
 import {Images} from '../../assets';
@@ -15,14 +16,20 @@ import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import {vh, vw} from '../../theme/dimensions';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {colors} from '../../theme';
-import { arrayUnion, doc, getDoc, getFirestore, updateDoc } from '@react-native-firebase/firestore';
-import { getAuth } from '@react-native-firebase/auth';
-import { ScreenNames } from '../../navigator/screenNames';
-
-
+import {
+  arrayUnion,
+  doc,
+  getDoc,
+  getFirestore,
+  updateDoc,
+} from '@react-native-firebase/firestore';
+import {getAuth} from '@react-native-firebase/auth';
+import {ScreenNames} from '../../navigator/screenNames';
+import Button from '../../components/Button';
+import InputField from '../../components/TextInput';
+import AddInputFieldButton from '../../components/AddInputFieldButton';
 
 const db = getFirestore();
-
 
 const Add = () => {
   const navigation = useNavigation();
@@ -30,24 +37,24 @@ const Add = () => {
   const [cook, setCook] = useState('');
   const [isTooltipVisible, setTooltipVisible] = useState(false);
   const [url, setUrl] = useState('');
-  const [title, setTitle] = useState('');
+  const [label, setLabel] = useState('');
   const [serve, setServe] = useState('');
-
-  const [ingredients, setIngredients] = useState<string[]>(['']);
-  const [healths, setHealths] = useState<string[]>(['']);
-  const [diets, setDiets] = useState<string[]>(['']);
-  const [dishType, setDishType] = useState('');
-  const [mealType, setMealType] = useState('');
-  const [cuisines, setCuisines] = useState('');
+  const [ingredientLines, setIngredients] = useState<string[]>(['']);
+  const [healthLabels, setHealths] = useState<string[]>(['']);
+  const [dietLabels, setDiets] = useState<string[]>(['']);
+  const [dishType, setDishType] = useState<string[]>(['']);
+  const [cautions, setCautions] = useState<string[]>(['']);
+  const [mealType, setMealType] = useState<string[]>(['']);
+  const [cuisineType, setCuisines] = useState<string[]>(['']);
   const serveInputRef = useRef<TextInput>(null);
   const cookInputRef = useRef<TextInput>(null);
   const ingredientInputRef = useRef<TextInput>(null);
   const healthInputRef = useRef<TextInput>(null);
   const dietInputRef = useRef<TextInput>(null);
   const dishTypeInputRef = useRef<TextInput>(null);
+  const cautionInputRef = useRef<TextInput>(null);
   const mealTypeInputRef = useRef<TextInput>(null);
   const cuisinesInputRef = useRef<TextInput>(null);
-
   const handleUploadFromGallery = async () => {
     launchImageLibrary({mediaType: 'photo'}, async response => {
       if (response.didCancel) {
@@ -62,93 +69,105 @@ const Add = () => {
       }
     });
   };
-
   const collectRecipeData = () => {
+
+    if (!label || !serve || !cook || ingredientLines.some(ingredient => ingredient.trim() === '') || !imgUri) {
+      
+      Alert.alert('All fields must be filled, and an image must be selected.');
+      return;
+    }
     const recipeData = {
-      title,
-      serve,
-      cook,
-      ingredients,
-      healths,
-      diets,
-      dishType,
-      mealType,
-      cuisines,
-      imageUrl: url, 
+      recipe: {
+        label,
+        serve,
+        cook,
+        ingredientLines,
+        healthLabels,
+        dietLabels,
+        dishType,
+        mealType,
+        cautions,
+        cuisineType,
+        image: url,
+      },
     };
-  
+
     return recipeData;
   };
 
   const handleTextChange = (text: string, field: string, index: number) => {
     if (field === 'title') {
-      setTitle(text);
+      setLabel(text);
     } else if (field === 'serve') {
       setServe(text);
     } else if (field === 'cook') {
       setCook(text);
     } else if (field === 'ingredient') {
-      const updatedIngredients = [...ingredients];
+      const updatedIngredients = [...ingredientLines];
       updatedIngredients[index] = text;
       setIngredients(updatedIngredients);
     } else if (field === 'diet') {
-      const updatedDiets = [...diets];
+      const updatedDiets = [...dietLabels];
       updatedDiets[index] = text;
       setDiets(updatedDiets);
     } else if (field === 'mealType') {
-      setMealType(text);
+      const updateMeal = [...mealType];
+      updateMeal[index] = text;
+      setMealType(updateMeal);
     } else if (field === 'dishType') {
-      setDishType(text);
+      const updatedDish = [...dishType];
+      updatedDish[index] = text;
+      setDishType(updatedDish);
     } else if (field === 'health') {
-      const updatedHealths = [...healths];
+      const updatedHealths = [...healthLabels];
       updatedHealths[index] = text;
       setHealths(updatedHealths);
-    }else if(field === 'cuisines'){
-      setCuisines(text)
+    } else if (field === 'cuisines') {
+      const updatedCuisines = [...cuisineType];
+      updatedCuisines[index] = text;
+      setCuisines(updatedCuisines);
+    } else if (field === 'caution') {
+      const updatedCautions = [...cautions];
+      updatedCautions[index] = text;
+      setCautions(updatedCautions);
     }
   };
 
-
-
   const handleAddRecipe = async () => {
     const recipeData = collectRecipeData();
-  
-    const userId = getAuth().currentUser?.uid;
-   if(userId){
 
-    try {
-      const userDocRef = doc(db, 'users', userId);
-      const userDoc = await getDoc(userDocRef);
-    
-      let postData = userDoc.exists ? userDoc.data().postData || [] : [];
-      
-     
-      postData.push(recipeData);
-    
-      
-      await updateDoc(userDocRef, {
-        postData: postData,
-      });
-    
-      console.log('Recipe added successfully!');
-      setCook('');
-      setTitle('');
-      setServe('');
-      setUrl('');
-      setDishType('');
-      setMealType('');
-      setCuisines('');
-      setHealths(['']);
-      setDiets(['']);
-      setIngredients(['']);
-      SetImgUri(false);
-      navigation.navigate(ScreenNames.Profile)
-    } catch (error) {
-      console.error('Error adding favorite recipe: ', error);
+    const userId = getAuth().currentUser?.uid;
+    if (userId) {
+      try {
+        const userDocRef = doc(db, 'users', userId);
+        const userDoc = await getDoc(userDocRef);
+
+        let postData = userDoc.exists ? userDoc.data().postData || [] : [];
+
+        postData.push(recipeData);
+
+        await updateDoc(userDocRef, {
+          postData: postData,
+        });
+
+        console.log('Recipe added successfully!');
+        setCook('');
+        setLabel('');
+        setServe('');
+        setUrl('');
+        setDishType(['']);
+        setMealType(['']);
+        setCuisines(['']);
+        setHealths(['']);
+        setDiets(['']);
+        setIngredients(['']);
+        setCautions(['']);
+        SetImgUri(false);
+        navigation.navigate(ScreenNames.Profile);
+      } catch (error) {
+        console.error('Error adding favorite recipe: ', error);
+      }
     }
-   
-   }
-    
   };
 
   const handleFocusNextInput = (nextInputRef: React.RefObject<TextInput>) => {
@@ -157,20 +176,26 @@ const Add = () => {
     }
   };
 
-  const addNewInputField = (field: 'ingredient' | 'health' | 'diet') => {
-    if (field === 'ingredient') {
-      setIngredients([...ingredients, '']);
-    } else if (field === 'health') {
-      setHealths([...healths, '']);
-    } else if (field === 'diet') {
-      setDiets([...diets, '']);
-    }
-  };
+  
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle={'dark-content'} />
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
+        <TouchableOpacity
+          onPress={() => {
+            navigation.goBack();
+            setCook('');
+            setLabel('');
+            setServe('');
+            setUrl('');
+            setDishType(['']);
+            setMealType(['']);
+            setCuisines(['']);
+            setHealths(['']);
+            setDiets(['']);
+            setIngredients(['']);
+            SetImgUri(false);
+          }}>
           <Image source={Images.cancel} style={styles.back} />
         </TouchableOpacity>
         <TouchableOpacity onPress={() => setTooltipVisible(true)}>
@@ -208,242 +233,196 @@ const Add = () => {
 
       <ScrollView style={styles.scroll}>
         <View style={styles.inputContainer}>
-          <TextInput
+          <InputField
+            value={label}
             placeholder="Title: My best-ever pea soup"
-            style={styles.input}
-            value={title}
-            placeholderTextColor="#696969"
             onChangeText={text => handleTextChange(text, 'title', 0)}
+            style={styles.input}
             onSubmitEditing={() => handleFocusNextInput(serveInputRef)}
           />
         </View>
 
-        <View
-          style={styles.halfContain}>
-          <View style={{justifyContent: 'center', alignItems: 'center'}}>
-            <Text style={{fontSize: vh(17), fontWeight: '400'}}>Serves:</Text>
+        <View style={styles.halfContain}>
+          <View style={styles.middle}>
+            <Text style={styles.halfText}>Serves:</Text>
           </View>
 
           <View style={styles.inputContainers}>
-            <TextInput
-              ref={serveInputRef}
-              placeholder="2 people"
-              style={styles.inputs}
+            <InputField
               value={serve}
-              placeholderTextColor="#696969"
+              placeholder="2 people"
               onChangeText={text => handleTextChange(text, 'serve', 0)}
+              style={styles.inputs}
               onSubmitEditing={() => handleFocusNextInput(cookInputRef)}
+              ref={cookInputRef}
             />
           </View>
         </View>
 
-        <View
-          style={styles.halfContain}>
-          <View style={{justifyContent: 'center', alignItems: 'center'}}>
-            <Text style={{fontSize: vh(17), fontWeight: '400'}}>
-              Cook Time:
-            </Text>
+        <View style={styles.halfContain}>
+          <View style={styles.middle}>
+            <Text style={styles.halfText}>Cook Time:</Text>
           </View>
 
           <View style={styles.inputContainers}>
-            <TextInput
-              ref={cookInputRef}
-              placeholder="1 hr 30 mins"
-              style={styles.inputs}
+            <InputField
               value={cook}
-              placeholderTextColor="#696969"
+              placeholder="1 hr 30 mins"
               onChangeText={text => handleTextChange(text, 'cook', 0)}
+              style={styles.inputs}
+              ref={cookInputRef}
               onSubmitEditing={() => handleFocusNextInput(ingredientInputRef)}
             />
           </View>
         </View>
-        <View
-          style={{
-            marginTop: vh(25),
-            marginHorizontal: vw(20),
-          }}>
-          <Text style={{fontSize: vh(22), fontWeight: '500'}}>Ingredients</Text>
+        <View style={styles.detail}>
+          <Text style={styles.recipedesc}>Ingredients</Text>
 
-          {ingredients.map((ingredient, index) => (
+          {ingredientLines.map((ingredient, index) => (
             <View key={index} style={styles.ingredientContainer}>
-              <TextInput
-                ref={ingredientInputRef}
-                placeholder="100ml water"
-                style={styles.input}
+              <InputField
+                key={index}
                 value={ingredient}
-                placeholderTextColor="#696969"
+                placeholder="100ml water"
                 onChangeText={text =>
                   handleTextChange(text, 'ingredient', index)
                 }
+                style={styles.input}
+                ref={ingredientInputRef}
                 onSubmitEditing={() => handleFocusNextInput(healthInputRef)}
               />
             </View>
           ))}
 
-          <View
-            style={{
-              marginTop: vh(15),
-              alignItems: 'center',
-              justifyContent: 'center',
-              flexDirection: 'row',
-            }}>
-            <TouchableOpacity onPress={() => addNewInputField('ingredient')}>
-              <Image
-                source={Images.plus}
-                style={{height: vh(25), width: vh(25)}}
-              />
-            </TouchableOpacity>
-            <Text
-              style={{fontSize: vh(17), fontWeight: '500', marginLeft: vw(10)}}>
-              Ingredients
-            </Text>
-          </View>
+          <AddInputFieldButton
+            onPress={() => setIngredients([...ingredientLines, ''])}
+            label="Add Ingredient"
+          />
         </View>
 
-        <View
-          style={{
-            marginTop: vh(25),
-            marginHorizontal: vw(20),
-          }}>
-          <Text style={{fontSize: vh(22), fontWeight: '500'}}>Health</Text>
+        <View style={styles.detail}>
+          <Text style={styles.recipedesc}>Health</Text>
 
-          {healths.map((health, index) => (
+          {healthLabels.map((health, index) => (
             <View key={index} style={styles.ingredientContainer}>
-              <TextInput
-                ref={healthInputRef}
-                placeholder="Low-Pottasium"
-                style={styles.input}
+              <InputField
+                key={index}
                 value={health}
-                placeholderTextColor="#696969"
+                placeholder="Low-Pottasium"
                 onChangeText={text => handleTextChange(text, 'health', index)}
+                style={styles.input}
+                ref={healthInputRef}
+                onSubmitEditing={() => handleFocusNextInput(cautionInputRef)}
+              />
+            </View>
+          ))}
+
+          <AddInputFieldButton
+            onPress={() => setHealths([...healthLabels, ''])}
+            label="Add Health"
+          />
+        </View>
+
+        <View style={styles.detail}>
+          <Text style={styles.recipedesc}>Cautions</Text>
+
+          {cautions.map((caution, index) => (
+            <View key={index} style={styles.ingredientContainer}>
+              <InputField
+                key={index}
+                value={caution}
+                placeholder="Low Sodium"
+                onChangeText={text => handleTextChange(text, 'caution', index)}
+                style={styles.input}
+                ref={dietInputRef}
                 onSubmitEditing={() => handleFocusNextInput(dietInputRef)}
               />
             </View>
           ))}
 
-          <View
-            style={{
-              marginTop: vh(15),
-              alignItems: 'center',
-              justifyContent: 'center',
-              flexDirection: 'row',
-            }}>
-            <TouchableOpacity onPress={() => addNewInputField('health')}>
-              <Image
-                source={Images.plus}
-                style={{height: vh(25), width: vh(25)}}
-              />
-            </TouchableOpacity>
-            <Text
-              style={{fontSize: vh(17), fontWeight: '500', marginLeft: vw(10)}}>
-              Healths
-            </Text>
-          </View>
+          <AddInputFieldButton
+            onPress={() => setCautions([...cautions, ''])}
+            label="Add Caution"
+          />
         </View>
 
-        <View
-          style={{
-            marginTop: vh(25),
-            marginHorizontal: vw(20),
-          }}>
-          <Text style={{fontSize: vh(22), fontWeight: '500'}}>Diet</Text>
+        <View style={styles.detail}>
+          <Text style={styles.recipedesc}>Diet</Text>
 
-          {diets.map((diet, index) => (
+          {dietLabels.map((diet, index) => (
             <View key={index} style={styles.ingredientContainer}>
-              <TextInput
-                ref={dietInputRef}
-                placeholder="Low Sodium"
-                style={styles.input}
+              <InputField
+                key={index}
                 value={diet}
-                placeholderTextColor="#696969"
+                placeholder="Low Sodium"
                 onChangeText={text => handleTextChange(text, 'diet', index)}
+                style={styles.input}
+                ref={dietInputRef}
                 onSubmitEditing={() => handleFocusNextInput(dishTypeInputRef)}
               />
             </View>
           ))}
 
-          <View
-            style={{
-              marginTop: vh(15),
-              alignItems: 'center',
-              justifyContent: 'center',
-              flexDirection: 'row',
-            }}>
-            <TouchableOpacity onPress={() => addNewInputField('diet')}>
-              <Image
-                source={Images.plus}
-                style={{height: vh(25), width: vh(25)}}
+          <AddInputFieldButton
+            onPress={() => setDiets([...dietLabels, ''])}
+            label="Add Diet"
+          />
+        </View>
+
+        <View style={styles.detail}>
+          <Text style={styles.recipedesc}>Dish Type</Text>
+
+          {dishType.map((dish, index) => (
+            <View key={index} style={styles.ingredientContainer}>
+              <InputField
+                key={index}
+                value={dish}
+                placeholder="Desserts"
+                onChangeText={text => handleTextChange(text, 'dishType', index)}
+                style={styles.input}
+                ref={dishTypeInputRef}
+                onSubmitEditing={() => handleFocusNextInput(mealTypeInputRef)}
               />
-            </TouchableOpacity>
-            <Text
-              style={{fontSize: vh(17), fontWeight: '500', marginLeft: vw(10)}}>
-              Diet
-            </Text>
-          </View>
+            </View>
+          ))}
         </View>
 
-        <View
-          style={{
-            marginTop: vh(25),
-            marginHorizontal: vw(20),
-          }}>
-          <Text style={{fontSize: vh(22), fontWeight: '500'}}>Dish Type</Text>
+        <View style={styles.detail}>
+          <Text style={styles.recipedesc}>Meal Type</Text>
 
-          <View style={styles.ingredientContainer}>
-            <TextInput
-              ref={dishTypeInputRef}
-              placeholder="Desserts"
-              style={styles.input}
-              value={dishType}
-              placeholderTextColor="#696969"
-              onChangeText={text => handleTextChange(text, 'dishType', 0)}
-              onSubmitEditing={() => handleFocusNextInput(mealTypeInputRef)}
-            />
-          </View>
+          {mealType.map((meal, index) => (
+            <View key={index} style={styles.ingredientContainer}>
+              <InputField
+                key={index}
+                value={meal}
+                placeholder="Lunch/Dinner"
+                onChangeText={text => handleTextChange(text, 'mealType', index)}
+                style={styles.input}
+                ref={mealTypeInputRef}
+              />
+            </View>
+          ))}
         </View>
 
-        <View
-          style={{
-            marginTop: vh(25),
-            marginHorizontal: vw(20),
-          }}>
-          <Text style={{fontSize: vh(22), fontWeight: '500'}}>Meal Type</Text>
+        <View style={styles.detail}>
+          <Text style={styles.recipedesc}>Cuisines</Text>
 
-          <View style={styles.ingredientContainer}>
-            <TextInput
-              ref={mealTypeInputRef}
-              placeholder="Lunch/Dinner"
-              style={styles.input}
-              value={mealType}
-              placeholderTextColor="#696969"
-              onChangeText={text => handleTextChange(text, 'mealType', 0)}
-            />
-          </View>
-        </View>
-
-        <View
-          style={{
-            marginTop: vh(25),
-            marginHorizontal: vw(20),
-          }}>
-          <Text style={{fontSize: vh(22), fontWeight: '500'}}>Cuisines</Text>
-
-          <View style={styles.ingredientContainer}>
-            <TextInput
-              ref={cuisinesInputRef}
-              placeholder="French"
-              style={styles.input}
-              value={cuisines}
-              placeholderTextColor="#696969"
-              onChangeText={text => handleTextChange(text, 'cuisines', 0)}
-            />
-          </View>
+          {cuisineType.map((cuisine, index) => (
+            <View key={index} style={styles.ingredientContainer}>
+              <InputField
+                key={index}
+                value={cuisine}
+                placeholder="French"
+                onChangeText={text => handleTextChange(text, 'cuisines', index)}
+                style={styles.input}
+                ref={cuisinesInputRef}
+              />
+            </View>
+          ))}
         </View>
 
         <View>
-          <TouchableOpacity style={styles.touch} onPress={() => handleAddRecipe()}>
-            <Text style={styles.text}>ADD RECIPE</Text>
-          </TouchableOpacity>
+          <Button onPress={() => handleAddRecipe()} text="Add Recipe" />
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -453,15 +432,44 @@ const Add = () => {
 export default Add;
 
 const styles = StyleSheet.create({
+  addIconText: {
+    fontSize: vh(17),
+    fontWeight: '500',
+    marginLeft: vw(10),
+  },
+  addicon: {
+    height: vh(25),
+    width: vh(25),
+  },
+  add: {
+    marginTop: vh(15),
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
+  },
+  recipedesc: {
+    fontSize: vh(22),
+    fontWeight: '500',
+  },
+  detail: {
+    marginTop: vh(25),
+    marginHorizontal: vw(20),
+  },
+  halfText: {
+    fontSize: vh(17),
+    fontWeight: '400',
+  },
+  middle: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   halfContain: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginHorizontal: vw(20),
     marginTop: vh(20),
   },
-  scroll: {
-    marginBottom: vh(30),
-  },
+  scroll: {},
   gallery: {
     marginRight: vw(7),
     height: vh(26),

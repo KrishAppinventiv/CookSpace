@@ -90,3 +90,33 @@ export const removeFavoriteRecipe = recipeLabel => async dispatch => {
     console.log('User is not logged in');
   }
 };
+
+
+export const addPostRecipe = recipe => async dispatch => {
+  const userId = getAuth().currentUser?.uid;
+  if (userId) {
+    try {
+      const userDocRef = doc(db, 'users', userId);
+      const userDoc = await getDoc(userDocRef);
+
+      let favorites = userDoc.exists ? userDoc.data().postData || [] : [];
+
+      if (
+        !favorites.some(fav => fav.recipe.recipe.label === recipe.recipe.label)
+      ) {
+        console.log('Entryyyyyyy');
+        favorites.push({recipe});
+
+        await updateDoc(userDocRef, {savedItems: favorites});
+
+        dispatch(addFavorite({recipe}));
+      } else {
+        console.log('Recipe already exists in favorites');
+      }
+    } catch (error) {
+      console.error('Error adding favorite recipe: ', error);
+    }
+  } else {
+    console.log('User is not logged in');
+  }
+};

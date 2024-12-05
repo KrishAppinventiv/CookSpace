@@ -1,454 +1,522 @@
-import { StyleSheet, Text, TouchableOpacity, View,TextInput ,Image,Alert,SafeAreaView} from 'react-native'
-import React, { useEffect, useRef, useState } from 'react'
-import { useNavigation } from '@react-navigation/native';
-import { Images } from '../../assets';
+import {
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  TextInput,
+  Image,
+  Alert,
+  SafeAreaView,
+  ScrollView,
+} from 'react-native';
+import React, {useEffect, useRef, useState} from 'react';
+import {useNavigation} from '@react-navigation/native';
+import {Images} from '../../assets';
 import validator from 'validator';
-import { ScreenNames } from '../../navigator/screenNames';
+import {ScreenNames} from '../../navigator/screenNames';
 import auth from '@react-native-firebase/auth';
-import { getFirestore , FieldValue} from '@react-native-firebase/firestore';
-import { vh } from '../../theme/dimensions';
-
-
+import {getFirestore, FieldValue} from '@react-native-firebase/firestore';
+import {vh, vw} from '../../theme/dimensions';
+import InputField from '../../components/TextInput';
 
 const Signup = () => {
-    
+  const [Email, SetEmail] = useState('');
+  const [Name, SetName] = useState('');
+  const [Password, SetPassword] = useState('');
+  const [CnfrmPassword, SetCnfrmPassword] = useState('');
+  const [emailError, setEmailError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+  const [cnfrmpasswordError, setCnfrmPasswordError] = useState('');
+  const [accountError, setAccountError] = useState(false);
+  const navigation = useNavigation();
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const [isPasswordVisible2, setIsPasswordVisible2] = useState(false);
+  const nameInputRef = useRef(null);
+  const emailInputRef = useRef(null);
+  const confrmpasswordInputRef = useRef(null);
+  const passwordInputRef = useRef(null);
 
-    const [Email, SetEmail] = useState("");
-    const [Name, SetName] = useState("");
-    const [Password, SetPassword] = useState("");
-    const [CnfrmPassword, SetCnfrmPassword] = useState("");
-    const [emailError, setEmailError] = useState('');
-    const [passwordError, setPasswordError] = useState('');
-    const [cnfrmpasswordError, cnfrmSetPasswordError] = useState('');
-    const [accountError, setAccountError] = useState(false);
-    const navigation = useNavigation();
-     
+  const validateEmail = email => {
+    if (!validator.isEmail(email)) {
+      setEmailError('Invalid Email format');
+      return false;
+    } else {
+      setEmailError('');
+    }
+    if (email !== 'Krishcs279@gmail.com') {
+      return false;
+    }
 
-    const nameInputRef = useRef(null);
-    const emailInputRef = useRef(null);
-    const confrmpasswordInputRef = useRef(null);
-    const passwordInputRef = useRef(null);
-    
-    const validateEmail = (email) => {
+    return true;
+  };
 
-        if (!validator.isEmail(email)) {
-            setEmailError('Invalid Email format');
-            return false;
-        }else{
-            setEmailError('');
-        }
-        if (email !== 'Krishcs279@gmail.com') {  
-            
-            return false;
-        }
-        
-        
-        return true;
-    };
-
-
-    useEffect(() => {
-    
+  useEffect(() => {
+    setTimeout(() => {
         nameInputRef.current?.focus();
-        
+    }, 100);
     
-      }, []);
+  }, []);
 
-    const validatePassword = (password) => {
-        if (password.length < 6) {
-            setPasswordError('Password should have at least 6 characters');
+  const validatePassword = password => {
+    if (password.length < 6) {
+      setPasswordError('Password should have at least 6 characters');
+      return false;
+    } else {
+      setPasswordError('');
+    }
+   
+
+    return true;
+  };
+
+  const handleTextChange = (text, field) => {
+    if (field === 'email') {
+      SetEmail(text.toLowerCase());
+      
+    } else if (field === 'password') {
+      SetPassword(text);
+      
+    } else if (field === 'cnfrmPassword') {
+      SetCnfrmPassword(text);
+    } else if (field === 'name') {
+      SetName(text);
+    }
+  };
+
+  const validateCnfrmPassword = cnfrmpassword => {
+          if(Password!=cnfrmpassword){
+            setCnfrmPasswordError('Password should be match')
             return false;
-        }
-        else{
-            setPasswordError('');
-        }
-        if (password !== 'Krish@123') {
-           
-            return false;
-        }
-        
-        return true;
-    };
+          }else{
+            setCnfrmPasswordError('')
+          }
 
-    
 
-    const handleTextChange = (text, field) => {
-        if (field === 'email') {
-            SetEmail(text);
-            validateEmail(text);
-        } else if (field === 'password') {
-            SetPassword(text);
-            validatePassword(text);
-        }
-        else if (field === 'cnfrmPassword') {
-            SetCnfrmPassword(text);
-            
-        }
-        else if (field === 'name') {
-            SetName(text);
-            
-        }
-    };
+          return true;
+  };
 
-    const handleSubmit = async () => {
-        const firestore = getFirestore();
-        console.log(firestore); 
-    
-        try {
-            const userCredential = await auth().createUserWithEmailAndPassword(Email, Password);
-            console.log("User created successfully");
-    
-            const user = userCredential.user;
-            console.log("Saving user data to Firestore...");
-    
-            
-            const userDocRef = firestore.collection('users').doc(user.uid);
-            console.log(userDocRef); 
-    
-           
-            if (userDocRef && typeof userDocRef.set === 'function') {
-               
-                await userDocRef.set({
-                    name: Name,
-                    email: Email,
-                    profilePic: '',
-                    createdAt: FieldValue.serverTimestamp(),
-                    dateofbirth: '',
-                    savedItem:[],
-                    PostItem:[]
-                });
-                console.log('User data saved to Firestore successfully!');
-                navigation.navigate(ScreenNames.Signin); // Navigate after successful sign-up
-            } else {
-                
-                Alert.alert('There was an error saving your data. Please try again later.');
-            }
-        } catch (error) {
-            console.error('Error saving user data to Firestore:', error);
-    
-            if (error.code === 'auth/email-already-in-use') {
-                Alert.alert('The email address is already in use by another account.');
-            } else if (error.code === 'auth/invalid-email') {
-                Alert.alert('The email address is not valid.');
-            } else if (error.code === 'auth/weak-password') {
-                Alert.alert('Password should be at least 6 characters.');
-            } else {
-                Alert.alert('An error occurred. Please try again.');
-            }
-        }
-    }; 
+
+  const handleSubmit = async () => {
+    const firestore = getFirestore();
+    console.log(firestore);
+
+    try {
+      const userCredential = await auth().createUserWithEmailAndPassword(
+        Email,
+        Password,
+      );
+      console.log('User created successfully');
+
+      const user = userCredential.user;
+      console.log('Saving user data to Firestore...');
+
+      const userDocRef = firestore.collection('users').doc(user.uid);
+      console.log(userDocRef);
+
+      if (userDocRef && typeof userDocRef.set === 'function') {
+        await userDocRef.set({
+          name: Name,
+          email: Email,
+          profilePic: '',
+          createdAt: FieldValue.serverTimestamp(),
+          dateofbirth: '',
+          savedItem: [],
+          PostItem: [],
+        });
+        console.log('User data saved to Firestore successfully!');
+        navigation.navigate(ScreenNames.Signin); 
+      } else {
+        Alert.alert(
+          'There was an error saving your data. Please try again later.',
+        );
+      }
+    } catch (error) {
+      console.error('Error saving user data to Firestore:', error);
+
+      if (error.code === 'auth/email-already-in-use') {
+        Alert.alert('The email address is already in use by another account.');
+      } else if (error.code === 'auth/invalid-email') {
+        Alert.alert('The email address is not valid.');
+      } else if (error.code === 'auth/weak-password') {
+        Alert.alert('Password should be at least 6 characters.');
+      } else {
+        Alert.alert('An error occurred. Please try again.');
+      }
+    }
+  };
+
+  const handleEmailSubmit = () => {
+    setTimeout(() => {
+      if (validateEmail(Email)) {
+        passwordInputRef.current?.focus();
+      }
+    }, 100);
+  };
+
+
+  
+  const handleNextFocus = (nextInputRef) => {
+    nextInputRef.current?.focus();
+  };
+
   return (
     <SafeAreaView style={styles.container}>
-      
-      <View style={styles.signupContainer}>
-            
-                <View style={styles.textContain}>
-                    <Text style={styles.signText}>
-                       Create an Account
-                    </Text>
+      <ScrollView style={styles.signupContainer}>
+        <View style={styles.textContain}>
+          <Text style={styles.signText}>Create an Account</Text>
 
-                    <Text style={styles.welText}>
-                    Let’s help you set up your account, it won’t take long.
-                    </Text>
+          <Text style={styles.welText}>
+            Let’s help you set up your account, it won’t take long.
+          </Text>
+        </View>
 
-                    
-                </View>
+        <View style={styles.textInputContain}>
+          <View style={styles.inputContainer}>
+          <InputField
+            ref={nameInputRef}
+            placeholder="Name"
+            value={Name}
+            onChangeText={(text) => handleTextChange(text, 'name')}
+            returnKeyType="next"
+            onSubmitEditing={()=> {
 
-                <View style={styles.textInputContain}>
-                
-                <View style={styles.inputContainer}>
-                        <TextInput
-                            ref={nameInputRef}
-                            placeholder="Name"
-                            style={styles.input}
-                            value={Name}
-                            autoFocus={true} 
-                            onChangeText={(text) => handleTextChange(text, 'name')}
-                            returnKeyType="next" 
-                        />
+                emailInputRef.current.focus()
+            }}
+            style={emailError ? { borderColor: 'red' } : {}}
+          />
+          </View>
 
-                        {emailError ? <Text style={styles.errorText}>{emailError}</Text> : null}
-                    </View>
+          <View
+            style={[styles.inputContainer, emailError && {borderColor: 'red'}]}>
+              <InputField
+            ref={emailInputRef}
+            placeholder="Email Address"
+            value={Email}
+            onChangeText={(text) => handleTextChange(text, 'email')}
+            returnKeyType="next"
+            onSubmitEditing={()=> {
+                    validateEmail(Email)
+                    passwordInputRef.current?.focus();
+                  
+            }}
+            style={emailError ? { borderColor: 'red' } : {}}
+          />
+          {emailError && <Text style={styles.errorText}>{emailError}</Text>}
+          </View>
 
-                    <View style={[styles.inputContainer, emailError && { borderColor: 'red' }]}>
-                        <TextInput
-                            placeholder="Email Address"
-                            style={styles.input}
-                            value={Email}
-                            ref={emailInputRef}
-                            onChangeText={(text) => handleTextChange(text, 'email')}
-                             autoCapitalize="none"
-                             returnKeyType="next" 
-                        />
-
-                        {emailError ? <Text style={styles.errorText}>{emailError}</Text> : null}
-                    </View>
-
-
-                    <View style={[styles.inputContainer, passwordError && { borderColor: 'red' }]}>
-                        <View style={styles.passwordContain}>
-                            <TextInput
-                                placeholder="Password"
-                                style={styles.input}
-                                value={Password}
-                                ref={passwordInputRef}
-                                onChangeText={(text) => handleTextChange(text, 'password')}
-                                 autoCapitalize="none"
-                                 returnKeyType="next" 
-                            />
-                            <TouchableOpacity>
-                                <Image source={Images.eye} style={styles.img2} />
-                            </TouchableOpacity>
-
-                        </View>
-
-
-                        {passwordError ? <Text style={styles.errorText}>{passwordError}</Text> : null}
-                    </View>
-
-
-                    <View style={[styles.inputContainer1, cnfrmpasswordError && { borderColor: 'red' }]}>
-                        <View style={styles.passwordContain}>
-                            <TextInput
-                                placeholder="Confirm Password"
-                                style={styles.input}
-                                value={CnfrmPassword}
-                                ref={confrmpasswordInputRef}
-                                onChangeText={(text) => handleTextChange(text, 'cnfrmPassword')}
-                                 autoCapitalize="none"
-                                
-                            />
-                            <TouchableOpacity>
-                                <Image source={Images.eye} style={styles.img2} />
-                            </TouchableOpacity>
-
-                        </View>
-
-
-                        {cnfrmpasswordError ? <Text style={styles.errorText}>{cnfrmpasswordError}</Text> : null}
-                    </View>
-
-
-
-
-                    
-                </View>
-
-                <View style={styles.forget}>
-                    <TouchableOpacity>
-                    <Text style={styles.forgetText}>
-                            Accept Term & Condition
-                        </Text>
-                    </TouchableOpacity>
-                        
-                    </View>
-                <View style={styles.touchContain}>
-                    <TouchableOpacity style={styles.touch} onPress={handleSubmit}>
-                        <Text style={styles.text}>
-                            Sign Up
-                        </Text>
-                    </TouchableOpacity>
-                </View>
-
-                <View style={{flexDirection:'row',justifyContent:'center',marginTop:40}}>
-                    <View style={{height:1,width:30,backgroundColor:'#c7c7c7',alignSelf:'center'}}>
-
-                    </View>
-                    <Text style={{marginHorizontal:10,color:'#c7c7c7'}}>Or Sign in With</Text>
-                    <View style={{height:1,width:30,backgroundColor:'#c7c7c7',alignSelf:'center'}}>
-                                                                   
-                    </View>                                                                                                                              
-                </View>
-
-                <View style={{flexDirection:'row',justifyContent:'center',marginTop:40}}>
-                    <View style={{height:54,width:54,elevation:2,justifyContent:'center',alignItems:'center',shadowColor: '#C3C3C3',shadowOpacity: 5,shadowRadius: 3,backgroundColor:'white',borderRadius:10,marginHorizontal:10}}>
-                       <Image source={Images.google} style={{height:28,width:28}}/>
-                    </View>
-                    <View style={{height:54,width:54,elevation:2,justifyContent:'center',alignItems:'center',shadowColor: '#C3C3C3',shadowOpacity: 5,shadowRadius: 3,backgroundColor:'white',borderRadius:10,marginHorizontal:10}}>
-                       <Image source={Images.facebook} style={{height:28,width:28}}/>
-                    </View>
-                </View>
-
-
-                <View style={{flexDirection:'row',justifyContent:'center',marginTop:vh(30)}}>
-                    <Text>Already have an account?</Text>      
-                    <TouchableOpacity onPress={() => navigation.navigate(ScreenNames.Signin)}>
-                    <Text style={{color:'#FF9C00'}}> Sign In</Text>     
-                        </TouchableOpacity>  
-                    
-                </View>                                
-
+          <View
+            style={[
+              styles.inputContainer,
+              passwordError && {borderColor: 'red'},
+            ]}>
+            <View style={styles.passwordContain}>
+            <InputField
+            ref={passwordInputRef}
+            placeholder="Password"
+            value={Password}
+            onChangeText={(text) => handleTextChange(text, 'password')}
+            returnKeyType="next"
+            onSubmitEditing={()=> {
+                validatePassword(Password)
+                confrmpasswordInputRef.current?.focus();
+              
+        }}
+            style={passwordError ? { borderColor: 'red' } : {}}
+            secureTextEntry={!isPasswordVisible}
+          />
+              <TouchableOpacity
+                onPress={() => setIsPasswordVisible(prev => !prev)}>
+                <Image
+                  source={isPasswordVisible ? Images.eye : Images.hide}
+                  style={styles.img2}
+                />
+              </TouchableOpacity>
             </View>
-    </SafeAreaView>
-  )
-}
 
-export default Signup
+            {passwordError && <Text style={styles.errorText}>{passwordError}</Text>}
+          </View>
+
+          <View
+            style={[
+              styles.inputContainer1,
+              cnfrmpasswordError && {borderColor: 'red'},
+            ]}>
+            <View style={styles.passwordContain}>
+            <InputField
+            ref={confrmpasswordInputRef}
+            placeholder="Confirm Password"
+            value={CnfrmPassword}
+            onSubmitEditing={() =>{
+                if(validateCnfrmPassword(CnfrmPassword)){
+                    handleSubmit()
+
+                }else{
+                    setTimeout(() => {
+                        confrmpasswordInputRef.current?.focus();
+                    }, 100);
+                    
+                }
+                }}
+            onChangeText={(text) => handleTextChange(text, 'cnfrmPassword')}
+            style={cnfrmpasswordError ? { borderColor: 'red' } : {}}
+            secureTextEntry={!isPasswordVisible2}
+          />
+             <TouchableOpacity
+                onPress={() => setIsPasswordVisible2(prev => !prev)}>
+                <Image
+                  source={isPasswordVisible2 ? Images.eye : Images.hide}
+                  style={styles.img2}
+                />
+              </TouchableOpacity>
+            </View>
+
+            {cnfrmpasswordError && (
+            <Text style={styles.errorText}>{cnfrmpasswordError}</Text>
+          )}
+          </View>
+        </View>
+
+       
+        <View style={styles.touchContain}>
+          <TouchableOpacity style={styles.touch} onPress={handleSubmit}>
+            <Text style={styles.text}>Sign Up</Text>
+          </TouchableOpacity>
+        </View>
+
+
+
+<View style={styles.footerContain}>
+          <View style={styles.footerView}></View>
+          <Text style={styles.option}>Or</Text>
+          <View style={styles.footerView}></View>
+        </View>
+
+        <View style={styles.otherOption}>
+          <TouchableOpacity activeOpacity={0.6}>
+            <View style={styles.googleView}>
+              <Image source={Images.google} style={styles.google} />
+              <Text style={{fontSize: vh(15)}}>Sign in with Google</Text>
+            </View>
+          </TouchableOpacity>
+        </View>
+
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'center',
+            marginTop: vh(30),
+          }}>
+          <Text>Already have an account?</Text>
+          <TouchableOpacity
+            onPress={() => navigation.navigate(ScreenNames.Signin)}>
+            <Text style={{color: '#FF9C00'}}> Sign In</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
+  );
+};
+
+export default Signup;
 
 const styles = StyleSheet.create({
+  gap: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginTop: vh(30),
+  },
+  container: {
+    flex: 1,
+    backgroundColor: '#ffffff',
+  },
+  img: {
+    marginTop: 20,
+    height: 42,
+    width: 120,
+  },
+  imageContain: {
+    marginTop: 10,
+    marginStart: 30,
+    marginBottom: 40,
+  },
+  signText: {
+    color: '#000000',
+    fontSize: 30,
+    fontWeight: '700',
+  },
 
-    container: {
-        flex: 1,
-        backgroundColor: "#ffffff"
-    },
-    img: {
-        marginTop: 20,
-        height: 42,
-        width: 120
-    },
-    imageContain: {
-        marginTop: 10,
-        marginStart: 30,
-        marginBottom:40
-    },
-    signText: {
-        color: "#000000",
-        fontSize: 30,
-        fontWeight: '700',
-    },
+  welText: {
+    color: '#000000',
+    fontSize: vh(12),
+    fontWeight: '400',
+    fontFamily: 'Poppins',
+    marginStart:vw(3)
+  },
+  blurBackground: {
+    opacity: 0.6,
+  },
+  textContain: {
+    marginTop: vh(30),
+    marginHorizontal:vw(20)
+  },
+  greyText: {
+    color: 'grey',
+    marginTop: 10,
+    width: 270,
+    fontSize: 15,
+    fontWeight: '600',
+  },
+  input: {
+    alignItems: 'center',
+    padding: 10,
+    color: 'black',
+  },
+  inputContainer: {
+    padding: 10,
+    width: vw(325),
+    borderRadius: 7,
+    borderColor: '#ccc',
+    borderWidth: 1,
+    backgroundColor: 'white',
+    marginBottom: vh(25),
+  },
 
-    welText: {
-        color: "#000000",
-        fontSize: 12,
-        fontWeight: '400',
-        fontFamily:'Poppins',
-        width:200
-    },
-    blurBackground: {
-        opacity: 0.6,
-    },
-    textContain: {
-        marginTop: 40,
-        marginStart: 36
-    },
-    greyText: {
-        color: "grey",
-        marginTop: 10,
-        width: 270,
-        fontSize: 15,
-        fontWeight: '600'
-    },
-    input: {
-        alignItems: 'center',
-        padding: 10,
-        color: 'black',
-    },
-    inputContainer: {
-        padding:10,
-        width: 350,
-        borderRadius: 7,
-        borderColor: "#ccc",
-        borderWidth: 1,
-        backgroundColor: 'white',
-        marginBottom: vh(25)
+  inputContainer1: {
+    padding: 10,
+    width: vw(325),
+    borderRadius: 7,
+    borderColor: '#ccc',
+    borderWidth: 1,
+    backgroundColor: 'white',
+  },
 
-    },
+  textInputContain: {
+    marginHorizontal: vw(20),
+    marginTop: 40,
+    alignItems: 'center',
+  },
+  touch: {
+    marginTop: 15,
+    paddingHorizontal: 130,
+    paddingVertical: 20,
+    backgroundColor: '#129575',
+    borderRadius: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
 
-    inputContainer1: {
-        padding:10,
-        width: 350,
-        borderRadius: 7,
-        borderColor: "#ccc",
-        borderWidth: 1,
-        backgroundColor: 'white',
-        
+  text: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: 'white',
+  },
+  touchContain: {
+    marginTop:vh(20),
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
 
-    },
+  errorText: {
+    color: 'red',
+    fontSize: 12,
+    marginTop: 5,
+    marginLeft: 10,
+  },
+  img2: {
+    height: 16,
+    width: 16,
+    marginEnd: 10,
+    alignItems: 'center',
+  },
+  passwordContain: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
 
-    textInputContain: {
-        marginHorizontal: 15,
-        marginTop: 40,
-        alignItems:'center'
-    },
-    touch: { 
-        marginTop: 15,
-       paddingHorizontal:130,
-        paddingVertical:20,
-        backgroundColor: "#129575",
-        borderRadius: 10,
-        justifyContent: 'center',
-        alignItems: 'center'
-    },
+  signupContainer: {
+    flex: 1,
+    marginTop: vh(10),
+    paddingBottom: vh(40),
+    marginBottom: vh(10),
+  },
+  errorContain: {
+    height: 65,
+    width: 350,
+    borderRadius: 7,
+    marginStart: 35,
+    backgroundColor: '#ffe8e7',
 
-    text: {
-        fontSize: 18,
-        fontWeight: '600',
-        color: 'white'
-    },
-    touchContain: {
-        justifyContent: 'center',
-        alignItems: 'center'
-    },
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 30,
+  },
+  redText: {
+    color: 'black',
+    padding: 10,
+    fontSize: 13,
+    fontWeight: '400',
+  },
+  forget: {
+    marginStart: 39,
+    marginTop: 25,
+    marginBottom: 25,
+  },
+  forgetText: {
+    color: '#FFAD30',
+    fontWeight: '600',
+  },
 
-    errorText: {
-        color: 'red',
-        fontSize: 12,
-        marginTop: 5,
-        marginLeft: 10,
-    },
-    img2: {
-        height: 16,
-        width: 16,
-        marginEnd: 10,
-        alignItems: 'center',
-    },
-    passwordContain: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center'
-    },
+  content: {
+    marginStart: 50,
+    marginTop: 20,
+  },
 
-    
-    signupContainer: {
-        flex: 1,
-        marginTop:vh(10)
-    },
-    errorContain:{
-        height: 65,
-        width: 350,
-        borderRadius: 7,
-        marginStart: 35,
-        backgroundColor: '#ffe8e7',
-       
-        justifyContent:'center',
-        alignItems:'center',
-        marginBottom:30
-    },
-    redText:{
-        color:"black",
-        padding:10,
-        fontSize:13,
-        fontWeight:'400'
-    },
-    forget:{
-    marginStart:39,
-    marginTop:25,
-    marginBottom:25
-    },
-    forgetText:{
-        color:'#FFAD30',
-        fontWeight:'600'
-    },
+  instructionText: {
+    paddingHorizontal: 12,
+    color: 'grey',
+    fontSize: 12,
+  },
+  instruction: {
+    marginTop: 17,
+    marginBottom: 10,
+  },
+  google: {
+    height: vh(28),
+    width: vw(28),
+    marginRight: vw(6),
+  },
+  googleView: {
+    elevation: 2,
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'row',
+    shadowColor: '#C3C3C3',
+    shadowOpacity: 5,
+    shadowRadius: 3,
+    backgroundColor: 'white',
+    borderRadius: 10,
+    padding: 15,
+  },
+  otherOption: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: vh(30),
+  },
 
-    content:{
-     marginStart:50,
-     marginTop:20
-        
-    },
-
-    instructionText:{
-        paddingHorizontal:12,
-        color:"grey",
-        fontSize:12
-    },
-    instruction:{
-        
-        marginTop:17,
-        marginBottom:10
-    },
-    
-
-
-})
-
-
+  option: {
+    marginHorizontal: 10,
+    color: '#c7c7c7',
+  },
+  footerView: {
+    height: 1,
+    width: 30,
+    backgroundColor: '#c7c7c7',
+    alignSelf: 'center',
+  },
+  footerContain: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginTop: vh(30),
+  },
+});
