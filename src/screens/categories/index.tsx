@@ -84,12 +84,7 @@ const Categories = () => {
         <Image source={Images.lefts} style={styles.back} />
       </TouchableOpacity>
       <View
-        style={{
-          marginTop: vh(20),
-          marginHorizontal: vw(20),
-         
-
-        }}>
+        style={styles.main}>
         {loading ? (
           <ActivityIndicator />
         ) : (
@@ -110,6 +105,10 @@ const Categories = () => {
 export default Categories;
 
 const styles = StyleSheet.create({
+  main: {
+    marginTop: vh(20),
+    marginHorizontal: vw(20),
+  },
   container: {
     flex: 1,
     backgroundColor: 'white',

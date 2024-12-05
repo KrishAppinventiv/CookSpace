@@ -9,7 +9,7 @@ export default StyleSheet.create({
   dontView: {
     flexDirection: 'row',
     justifyContent: 'center',
-    marginTop: 60,
+    marginTop: vh(30),
   },
   google: {
     height: vh(28),

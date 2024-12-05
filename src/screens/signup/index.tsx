@@ -27,7 +27,6 @@ const Signup = () => {
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const [cnfrmpasswordError, setCnfrmPasswordError] = useState('');
-  const [accountError, setAccountError] = useState(false);
   const navigation = useNavigation();
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [isPasswordVisible2, setIsPasswordVisible2] = useState(false);
@@ -46,7 +45,6 @@ const Signup = () => {
     if (email !== 'Krishcs279@gmail.com') {
       return false;
     }
-
     return true;
   };
 
@@ -54,7 +52,6 @@ const Signup = () => {
     setTimeout(() => {
         nameInputRef.current?.focus();
     }, 100);
-    
   }, []);
 
   const validatePassword = password => {
@@ -64,8 +61,6 @@ const Signup = () => {
     } else {
       setPasswordError('');
     }
-   
-
     return true;
   };
 
@@ -90,16 +85,12 @@ const Signup = () => {
           }else{
             setCnfrmPasswordError('')
           }
-
-
           return true;
   };
-
 
   const handleSubmit = async () => {
     const firestore = getFirestore();
     console.log(firestore);
-
     try {
       const userCredential = await auth().createUserWithEmailAndPassword(
         Email,
@@ -145,16 +136,6 @@ const Signup = () => {
     }
   };
 
-  const handleEmailSubmit = () => {
-    setTimeout(() => {
-      if (validateEmail(Email)) {
-        passwordInputRef.current?.focus();
-      }
-    }, 100);
-  };
-
-
-  
   const handleNextFocus = (nextInputRef) => {
     nextInputRef.current?.focus();
   };
@@ -249,12 +230,10 @@ const Signup = () => {
             onSubmitEditing={() =>{
                 if(validateCnfrmPassword(CnfrmPassword)){
                     handleSubmit()
-
                 }else{
                     setTimeout(() => {
                         confrmpasswordInputRef.current?.focus();
-                    }, 100);
-                    
+                    }, 100);    
                 }
                 }}
             onChangeText={(text) => handleTextChange(text, 'cnfrmPassword')}
@@ -283,8 +262,6 @@ const Signup = () => {
           </TouchableOpacity>
         </View>
 
-
-
 <View style={styles.footerContain}>
           <View style={styles.footerView}></View>
           <Text style={styles.option}>Or</Text>
@@ -299,17 +276,12 @@ const Signup = () => {
             </View>
           </TouchableOpacity>
         </View>
-
         <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'center',
-            marginTop: vh(30),
-          }}>
+          style={styles.already}>
           <Text>Already have an account?</Text>
           <TouchableOpacity
             onPress={() => navigation.navigate(ScreenNames.Signin)}>
-            <Text style={{color: '#FF9C00'}}> Sign In</Text>
+            <Text style={styles.signupColor}> Sign Up</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -320,6 +292,15 @@ const Signup = () => {
 export default Signup;
 
 const styles = StyleSheet.create({
+  already: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginTop: vh(30),
+  },
+  signupColor: {
+    color: '#FF9C00',
+  },
+  
   gap: {
     flexDirection: 'row',
     justifyContent: 'center',

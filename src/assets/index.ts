@@ -53,6 +53,7 @@ const Images = {
   unsave:require('./images/unsave.png'),
   lefts: require('./images/lefts.png'),
   searchs:  require('./images/search.png'),
+  nosearch:  require('./images/nosearch.png'),
   filter: require('./images/filter.png'),
   more: require('./images/more.png'),
   dp: require('./images/dp.png'),

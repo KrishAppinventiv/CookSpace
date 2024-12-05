@@ -72,12 +72,7 @@ const Details = () => {
           {data.recipe.label}
         </Text>
         <Text
-          style={{
-            fontSize: 18,
-            fontWeight: '600',
-            color: '#A9A9A9',
-            fontFamily: 'Poppins',
-          }}>
+          style={styles.review}>
           (13k Reviews)
         </Text>
       </View>
@@ -190,6 +185,12 @@ const Details = () => {
 export default Details;
 
 const styles = StyleSheet.create({
+  review: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#A9A9A9',
+    fontFamily: 'Poppins',
+  },
   flatView: {
     marginHorizontal: vw(20),
     marginTop: vh(8),

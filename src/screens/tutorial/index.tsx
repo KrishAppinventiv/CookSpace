@@ -16,20 +16,20 @@ const Tutorial = () => {
    
     <ImageBackground source={Images.tutorial} style={styles.container}>
      
-    <View style={{marginTop:100, alignItems:'center',justifyContent:'flex-end'}}>
+    <View style={styles.head}>
      
       <Image source={Images.chef}></Image>
-      <Text style={{fontSize:19,color:'white',fontWeight:'800'}}>100K+ Premium Recipe</Text>
+      <Text style={styles.premium}>100K+ Premium Recipe</Text>
     
       
        
     </View>
 
-    <View style={{ flex:1,justifyContent:'flex-end',alignItems:'center',marginBottom:100}}>
-      <Text style={{color:'white',fontSize:24,fontWeight:'700',fontFamily:'Georgia'}}>Welcome at CookSpace</Text>
-      <Text style={{color:'white',fontSize:15,fontWeight:'400',marginTop:10}}>Simple way to find Tasty Recipe</Text>
-      <TouchableOpacity style={{backgroundColor:'#129575',padding:20,borderRadius:30,paddingHorizontal:40,marginTop:20}} onPress={()=>navigation.navigate(ScreenNames.Signin)}>
-        <Text style={{fontSize:16,color:'white',fontWeight:'700'}}>Start Cooking</Text>
+    <View style={styles.mainView}>
+      <Text style={styles.welcome}>Welcome at CookSpace</Text>
+      <Text style={styles.tasty}>Simple way to find Tasty Recipe</Text>
+      <TouchableOpacity style={styles.touch} onPress={()=>navigation.navigate(ScreenNames.Signin)}>
+        <Text style={styles.start}>Start Cooking</Text>
       </TouchableOpacity>
     </View>
    
@@ -40,6 +40,46 @@ const Tutorial = () => {
 };
 
 const styles = StyleSheet.create({
+  start: {
+    fontSize:16,
+    color:'white',
+    fontWeight:'700',
+  },
+  touch: {
+    backgroundColor:'#129575',
+    padding:20,
+    borderRadius:30,
+    paddingHorizontal:40,
+    marginTop:20,
+  },
+  tasty: {
+    color:'white',
+    fontSize:15,
+    fontWeight:'400',
+    marginTop:10,
+  },
+  welcome: {
+    color:'white',
+    fontSize:24,
+    fontWeight:'700',
+    fontFamily:'Georgia',
+  },
+  mainView: {
+    flex:1,
+    justifyContent:'flex-end',
+    alignItems:'center',
+    marginBottom:100,
+  },
+  premium: {
+    fontSize:19,
+    color:'white',
+    fontWeight:'800',
+  },
+  head: {
+    marginTop:100,
+    alignItems:'center',
+    justifyContent:'flex-end',
+  },
 
   container:{
     flex: 1,

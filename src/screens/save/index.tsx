@@ -65,9 +65,9 @@ const Save = () => {
         Saved Recipes
       </Text>
     </View>
-    {favoriteItems.length==0 ? <View style={{justifyContent:"center",alignItems:'center',flex:1,marginHorizontal:vw(30),}}> 
-        <Image source={Images.bookmark} style={{height:vh(140),width:vh(140)}}/>
-      <Text style={{textAlign:'center', fontSize:vh(18),fontWeight:'500',color:colors.main,marginTop:vh(20),fontFamily:'Poppins'}}>Your Saved Recipe Is Currently Empty</Text>
+    {favoriteItems.length==0 ? <View style={styles.savedView}> 
+        <Image source={Images.bookmark} style={styles.saveImg}/>
+      <Text style={styles.empty}>Your Saved Recipe Is Currently Empty</Text>
     </View>: <View
         style={{
           marginTop: vh(20),
@@ -75,9 +75,7 @@ const Save = () => {
          
          flex:1
         }}>
-        {/* {loading ? (
-          <ActivityIndicator />
-        ) : ( */}
+        
           <FlatList
             showsVerticalScrollIndicator={false}
             data={recipes}
@@ -85,7 +83,7 @@ const Save = () => {
             keyExtractor={(item, index) => index.toString()}
            
           />
-        {/* )} */}
+       
       </View>}
    
     </SafeAreaView>
@@ -95,6 +93,24 @@ const Save = () => {
 export default Save
 
 const styles = StyleSheet.create({
+  empty: {
+    textAlign:'center',
+    fontSize:vh(18),
+    fontWeight:'500',
+    color:colors.main,
+    marginTop:vh(20),
+    fontFamily:'Poppins',
+  },
+  saveImg: {
+    height:vh(140),
+    width:vh(140),
+  },
+  savedView: {
+    justifyContent:"center",
+    alignItems:'center',
+    flex:1,
+    marginHorizontal:vw(30),
+  },
   heading: {
     textAlign: 'center',
     fontSize: vh(23),

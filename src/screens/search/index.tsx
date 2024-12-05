@@ -156,7 +156,7 @@ const Search = () => {
 
         <View style={styles.transparentView}>
           <View style={styles.review}>
-            <Image source={Images.star} style={{height: 15, width: 15}} />
+            <Image source={Images.star} style={styles.star} />
             <Text style={styles.point}>4.2</Text>
           </View>
           <Text style={styles.recipeTitle}>{item.recipe.label}</Text>
@@ -166,36 +166,25 @@ const Search = () => {
     </TouchableOpacity>
   );
 
-  // console.log('previous', previousSearches);
-
   return (
     <SafeAreaView style={styles.container}>
       <TouchableOpacity onPress={() => navigation.goBack()}>
         <Image source={Images.lefts} style={styles.back} />
       </TouchableOpacity>
 
-      <View style={{justifyContent: 'center'}}>
+      <View style={styles.mainView}>
         <Text
-          style={{
-            textAlign: 'center',
-            fontSize: vh(23),
-            fontWeight: '600',
-            alignSelf: 'center',
-          }}>
+          style={styles.head}>
           Search Recipes
         </Text>
       </View>
 
       <View
-        style={{
-          flexDirection: 'row',
-          marginHorizontal: vw(20),
-          marginTop: vh(30),
-        }}>
+        style={styles.boxView}>
         <View style={styles.searchBox}>
           <Image
             source={Images.searchs}
-            style={{height: vh(25), width: vw(25), tintColor: '#D9D9D9'}}
+            style={styles.search}
           />
           <TextInput
             ref={searchInputRef}
@@ -215,7 +204,7 @@ const Search = () => {
           <View style={styles.filter}>
             <Image
               source={Images.filter}
-              style={{height: vh(25), width: vw(25)}}
+              style={styles.filterImg}
             />
           </View>
         </TouchableOpacity>
@@ -223,21 +212,22 @@ const Search = () => {
 
       <View style={{marginHorizontal: vw(20), marginTop: vh(25)}}>
         {search != '' ? (
-          <Text style={{fontSize: 20, fontWeight: '600'}}>Search Result</Text>
+          <Text style={styles.response}>Search Result</Text>
         ) : (
-          <Text style={{fontSize: 20, fontWeight: '600'}}>Recent Search</Text>
+          <Text style={styles.response}>Recent Search</Text>
         )}
       </View>
-
-      <View
-        style={{
-          marginTop: vh(20),
-          marginHorizontal: vw(20),
-          paddingBottom: vh(140),
-        }}>
-        {loading ? (
-          <Text style={{alignSelf:'center'}}>No Previous History</Text>
+      {loading && search === '' ? (
+          <View
+          style={styles.nosearchView}>
+            <Image source={Images.nosearch} style={styles.nosearchImg}/>
+            <Text style={styles.nosearchText}>No Previous History...</Text>
+        </View>
+         
         ) : (
+      <View
+        style={styles.load}>
+        
           <FlatList
             showsVerticalScrollIndicator={false}
             data={search === '' ? previousSearches : recipes}
@@ -246,8 +236,8 @@ const Search = () => {
             numColumns={2}
             columnWrapperStyle={styles.columnWrapper}
           />
-        )}
-      </View>
+        
+      </View>)}
 
       <Modal
         onBackdropPress={() => setShowModal(false)}
@@ -256,24 +246,19 @@ const Search = () => {
         }}
         isVisible={ShowModal}
         backdropColor="rgba(0,0,0,0.5)"
-        style={{margin: 0}}>
+        style={{margin: 0}}  >
         <View style={styles.modalView}>
           <View style={styles.modalHeader}>
-            <Text style={{fontSize: vh(17), fontWeight: '600'}}>
+            <Text style={styles.filterText}>
               Filter Search
             </Text>
           </View>
-          <ScrollView style={{paddingBottom: vh(30)}}>
+          <ScrollView style={styles.scroll}>
             <Text
-              style={{
-                marginTop: vh(20),
-                marginStart: vw(13),
-                fontSize: vh(16),
-                fontWeight: '700',
-              }}>
+              style={styles.dishTyp}>
               Dish Type
             </Text>
-            <View style={{marginHorizontal: vw(14)}}>
+            <View style={styles.flatView}>
               <FlatList
                 showsHorizontalScrollIndicator={false}
                 horizontal
@@ -315,15 +300,10 @@ const Search = () => {
             </View>
 
             <Text
-              style={{
-                marginTop: vh(20),
-                marginStart: vw(13),
-                fontSize: vh(16),
-                fontWeight: '700',
-              }}>
+             style={styles.dishTyp}>
               Cusiness
             </Text>
-            <View style={{marginHorizontal: vw(14)}}>
+            <View style={styles.flatMargin}>
               <FlatList
                 showsHorizontalScrollIndicator={false}
                 horizontal
@@ -370,15 +350,10 @@ const Search = () => {
             </View>
 
             <Text
-              style={{
-                marginTop: vh(20),
-                marginStart: vw(13),
-                fontSize: vh(16),
-                fontWeight: '700',
-              }}>
+              style={styles.dishTyp}>
               Health
             </Text>
-            <View style={{marginHorizontal: vw(14)}}>
+            <View  style={styles.flatMargin}>
               <FlatList
                 showsHorizontalScrollIndicator={false}
                 horizontal
@@ -422,15 +397,10 @@ const Search = () => {
             </View>
 
             <Text
-              style={{
-                marginTop: vh(20),
-                marginStart: vw(13),
-                fontSize: vh(16),
-                fontWeight: '700',
-              }}>
+              style={styles.dishTyp}>
               Diet
             </Text>
-            <View style={{marginHorizontal: vw(13)}}>
+            <View style={styles.flatMargin}>
               <FlatList
                 showsHorizontalScrollIndicator={false}
                 scrollEnabled={false}
@@ -474,26 +444,13 @@ const Search = () => {
 
             <TouchableOpacity
               activeOpacity={0.7}
-              style={{
-                backgroundColor: colors.main,
-                marginHorizontal: vw(60),
-                marginTop: vh(30),
-                padding: 20,
-                borderRadius: vh(30),
-                justifyContent: 'center',
-                alignItems: 'center',
-                marginBottom: vh(20),
-              }}
+              style={styles.filtButton}
               onPress={() => {
                 setShowModal(false);
                 searchRecipe();
               }}>
               <Text
-                style={{
-                  color: colors.white,
-                  fontWeight: '600',
-                  fontSize: vh(15),
-                }}>
+                style={styles.filtText}>
                 Apply Filters
               </Text>
             </TouchableOpacity>
@@ -507,6 +464,80 @@ const Search = () => {
 export default Search;
 
 const styles = StyleSheet.create({
+  filtText: {
+    color: colors.white,
+    fontWeight: '600',
+    fontSize: vh(15),
+  },
+  filtButton: {
+    backgroundColor: colors.main,
+    marginHorizontal: vw(60),
+    marginTop: vh(30),
+    padding: 20,
+    borderRadius: vh(30),
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: vh(20),
+  },
+  flatMargin: {
+    marginHorizontal: vw(14),
+  },
+  flatView: {
+    marginHorizontal: vw(14),
+  },
+  dishTyp: {
+    marginTop: vh(20),
+    marginStart: vw(13),
+    fontSize: vh(16),
+    fontWeight: '700',
+  },
+  scroll: {
+    paddingBottom: vh(30),
+  },
+  filterText: {
+    fontSize: vh(17),
+    fontWeight: '600',
+  },
+  textHist: {
+    alignSelf:'center',
+  },
+  load: {
+    
+    marginTop: vh(20),
+    marginHorizontal: vw(20),
+    paddingBottom: vh(140),
+  },
+  response: {
+    fontSize: 20,
+    fontWeight: '600',
+  },
+  filterImg: {
+    height: vh(25),
+    width: vw(25),
+  },
+  search: {
+    height: vh(25),
+    width: vw(25),
+    tintColor: '#D9D9D9',
+  },
+  boxView: {
+    flexDirection: 'row',
+    marginHorizontal: vw(20),
+    marginTop: vh(30),
+  },
+  head: {
+    textAlign: 'center',
+    fontSize: vh(23),
+    fontWeight: '600',
+    alignSelf: 'center',
+  },
+  mainView: {
+    justifyContent: 'center',
+  },
+  star: {
+    height: 15,
+    width: 15,
+  },
   filtertext: {
     color: colors.main,
     fontWeight: '300',
@@ -647,4 +678,25 @@ const styles = StyleSheet.create({
     borderColor: colors.main,
     borderRadius: vh(10),
   },
+  nosearchView:{
+    
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  nosearchImg:{
+    
+      height:vh(100),
+      width:vh(100),
+  
+  },
+  nosearchText:{
+    textAlign:'center',
+    fontSize:vh(24),
+    fontWeight:'600',
+    color:colors.main,
+    marginTop:vh(30),
+    fontFamily:'Poppins',
+  }
+  
 });

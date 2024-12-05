@@ -18,8 +18,6 @@ import {colors} from '../../theme';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import {useSelector} from 'react-redux';
 import {ScreenNames} from '../../navigator/screenNames';
-
-
 import {getFirestore} from '@react-native-firebase/firestore';
 import {getAuth, signOut} from '@react-native-firebase/auth';
 
@@ -36,12 +34,8 @@ const Profile = () => {
   const favoriteItems = useSelector(state => state.favorites.items);
   console.log('favourite----->>>', favoriteItems);
 
-
-
- const renderItem = ({item}) => 
-      
+ const renderItem = ({item}) =>  
   {
-    
     console.log("gughushu", item)
     return (
     <TouchableOpacity activeOpacity={.8} onPress={() => {
@@ -51,25 +45,17 @@ const Profile = () => {
     }}>
   <View style={styles.card}>
     <Image source={{uri:item.recipe.image}} style={styles.recipeImage} />
-
-  
     <View style={styles.transparentView}>
-
     <View style={styles.review}>
       <Image source={Images.star} style={{height: 15, width: 15}} />
       <Text style={styles.point}>4.2</Text>
     </View>
       <Text style={styles.recipeTitle}>{item.recipe.label}</Text>
-     
-     
     </View>
-
-    
   </View>
   </TouchableOpacity>
 );
 };
-
 
   const handleOptionSelect = async option => {
     setTooltipVisible(false);
@@ -82,21 +68,12 @@ const Profile = () => {
           console.error('Error during logout: ', error);
         }
         break;
-      case 'Share':
-        console.log('Share selected');
-        break;
-      case 'Rate Recipe':
-        console.log('Rate Recipe selected');
-        break;
-      case 'Review':
-        console.log('Review selected');
-        break;
+    
       default:
         console.log(`${option} selected`);
         break;
     }
   };
-
   const handleUploadFromGallery = async () => {
     launchImageLibrary({mediaType: 'photo'}, async response => {
       if (response.didCancel) {
@@ -153,12 +130,10 @@ const Profile = () => {
         setLoading(false); 
       });
 
-   
     return () => unsubscribe();
    
   }, []);
-
-  
+ 
   return (
     <SafeAreaView style={styles.container}>
       <View style={{alignItems: 'flex-end', marginEnd: 20}}>
@@ -166,31 +141,19 @@ const Profile = () => {
           <Image source={Images.more} style={styles.back} />
         </TouchableOpacity>
       </View>
-
       <View style={styles.head}>
         <Text style={styles.heading}>Profile</Text>
       </View>
-
-      <View style={{flexDirection: 'row', marginHorizontal: vw(10)}}>
+      <View style={styles.upperProfile}>
         <View
-          style={{
-            borderRadius:vh(55),
-            height: vh(110),
-            width: vh(110),
-            borderColor:colors.main,
-            borderWidth:3,
-            justifyContent: 'center',
-            alignItems: 'center',
-            opacity: 0.9,
-            
-          }}>
+          style={styles.profileView}>
           <TouchableOpacity
             activeOpacity={0.7}
             onPress={() => handleUploadFromGallery()}>
             {imgUri || userProfilePic ? (
               <Image
                 source={{uri: userProfilePic}}
-                style={{width: vh(99), height: vh(99),borderRadius:vh(50),}}
+                style={styles.profileImg}
                 resizeMode="cover"
               />
             ) : (
@@ -200,83 +163,50 @@ const Profile = () => {
                 resizeMode="cover"
               />
             )}
-
-           
           </TouchableOpacity>
         </View>
         <View
-          style={{
-            flex: 1,
-            justifyContent: 'space-between',
-            flexDirection: 'row',
-            marginTop: vh(20),
-            marginHorizontal: vw(30),
-          }}>
+          style={styles.statusView}>
           <View>
-            <Text style={{color: '#A9A9A9'}}>Recipe</Text>
+            <Text style={styles.statusText}>Recipe</Text>
             <Text
-              style={{
-                textAlign: 'center',
-                marginTop: vh(10),
-                fontSize: vh(20),
-                fontWeight: '600',
-              }}>
+              style={styles.status}>
               4
             </Text>
           </View>
           <View>
-            <Text style={{color: '#A9A9A9'}}>Followers</Text>
+            <Text style={styles.statusText}>Followers</Text>
             <Text
-              style={{
-                textAlign: 'center',
-                marginTop: vh(10),
-                fontSize: vh(20),
-                fontWeight: '600',
-              }}>
+              style={styles.status}>
               2.5M
             </Text>
           </View>
           <View>
-            <Text style={{color: '#A9A9A9'}}>Following</Text>
+            <Text style={styles.statusText}>Following</Text>
             <Text
-              style={{
-                textAlign: 'center',
-                marginTop: vh(10),
-                fontSize: vh(20),
-                fontWeight: '600',
-              }}>
+              style={styles.status}>
               259
             </Text>
           </View>
         </View>
       </View>
 
-      <View style={{marginHorizontal: vw(21), marginTop: vh(25)}}>
+      <View style={styles.informView}>
         <Text
-          style={{
-            color: '#121212',
-            fontWeight: '600',
-            fontSize: vh(20),
-            fontFamily: 'Poppins',
-          }}>
+          style={styles.name}>
           {name}
         </Text>
-        <Text style={{color: '#A9A9A9', lineHeight: vh(16.5)}}>Chef</Text>
+        <Text style={styles.chefText}>Chef</Text>
         <Text
-          style={{
-            color: '#A9A9A9',
-            marginTop: vh(12),
-            lineHeight: vh(18.5),
-            fontSize: vh(13),
-          }}>
+          style={styles.describe}>
           Private Chef
         </Text>
         <Text
-          style={{color: '#A9A9A9', lineHeight: vh(18.5), fontSize: vh(13)}}>
+          style={styles.decribe}>
           Passionate about food and life 🥘🍲🍝🍱
         </Text>
         <Text
-          style={{color: '#71B1A1', lineHeight: vh(18.5), fontSize: vh(13)}}>
+          style={styles.moreText}>
           More..
         </Text>
       </View>
@@ -345,17 +275,12 @@ const Profile = () => {
       </View>
       {selectedTab == 'Recipe' && (
         <View
-          style={{
-            marginTop: vh(20),
-            marginHorizontal: vw(20),
-
-            flex: 1,
-          }}>
+          style={styles.recipes}>
           {recipes.length == 0 ? (
             <View
-              style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-                <Image source={Images.serving} style={{height:vh(100),width:vh(100)}}/>
-                <Text style={{textAlign:'center', fontSize:vh(24),fontWeight:'600',color:colors.main,marginTop:vh(20),fontFamily:'Poppins'}}>No Recipes Yet..</Text>
+              style={styles.flatView}>
+                <Image source={Images.serving} style={styles.serveView}/>
+                <Text style={styles.norecipeText}>No Recipes Yet..</Text>
             </View>
           ) : (
             <FlatList
@@ -384,7 +309,7 @@ const Profile = () => {
               onPress={() => handleOptionSelect('Share')}>
               <Image
                 source={Images.share}
-                style={{marginRight: vw(14), height: vh(14), width: vw(20)}}
+                style={styles.shareIcon}
               />
               <Text style={styles.tooltipText}>Share</Text>
             </TouchableOpacity>
@@ -393,7 +318,7 @@ const Profile = () => {
               onPress={() => handleOptionSelect('Privacy')}>
               <Image
                 source={Images.privacy}
-                style={{marginRight: vw(14), height: vh(20), width: vw(20)}}
+                style={styles.modalIcon}
               />
               <Text style={styles.tooltipText}>Privacy</Text>
             </TouchableOpacity>
@@ -402,7 +327,7 @@ const Profile = () => {
               onPress={() => handleOptionSelect('Diactivate')}>
               <Image
                 source={Images.delete}
-                style={{marginRight: vw(14), height: vh(20), width: vw(20)}}
+                style={styles.modalIcon}
               />
               <Text style={styles.tooltipText}>Diactivate</Text>
             </TouchableOpacity>
@@ -411,7 +336,7 @@ const Profile = () => {
               onPress={() => handleOptionSelect('Logout')}>
               <Image
                 source={Images.logout}
-                style={{marginRight: vw(14), height: vh(20), width: vw(20)}}
+                style={styles.modalIcon}
               />
               <Text style={styles.tooltipText}>Logout</Text>
             </TouchableOpacity>
@@ -425,6 +350,103 @@ const Profile = () => {
 export default Profile;
 
 const styles = StyleSheet.create({
+  upperProfile: {
+    flexDirection: 'row',
+    marginHorizontal: vw(10),
+  },
+  norecipeText: {
+    textAlign:'center',
+    fontSize:vh(24),
+    fontWeight:'600',
+    color:colors.main,
+    marginTop:vh(20),
+    fontFamily:'Poppins',
+  },
+  modalIcon: {
+    marginRight: vw(14),
+    height: vh(20),
+    width: vw(20),
+  },
+  shareIcon: {
+    marginRight: vw(14),
+    height: vh(14),
+    width: vw(20),
+  },
+  serveView: {
+    height:vh(100),
+    width:vh(100),
+  },
+  flatView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  recipes: {
+    marginTop: vh(20),
+    marginHorizontal: vw(20),
+    flex: 1,
+  },
+  moreText: {
+    color: '#71B1A1',
+    lineHeight: vh(18.5),
+    fontSize: vh(13),
+  },
+  decribe: {
+    color: '#A9A9A9',
+    lineHeight: vh(18.5),
+    fontSize: vh(13),
+  },
+  describe: {
+    color: '#A9A9A9',
+    marginTop: vh(12),
+    lineHeight: vh(18.5),
+    fontSize: vh(13),
+  },
+  chefText: {
+    color: '#A9A9A9',
+    lineHeight: vh(16.5),
+  },
+  name: {
+    color: '#121212',
+    fontWeight: '600',
+    fontSize: vh(20),
+    fontFamily: 'Poppins',
+  },
+  informView: {
+    marginHorizontal: vw(21),
+    marginTop: vh(25),
+  },
+  statusText: {
+    color: '#A9A9A9',
+  },
+  status: {
+    textAlign: 'center',
+    marginTop: vh(10),
+    fontSize: vh(20),
+    fontWeight: '600',
+  },
+  statusView: {
+    flex: 1,
+    justifyContent: 'space-between',
+    flexDirection: 'row',
+    marginTop: vh(20),
+    marginHorizontal: vw(30),
+  },
+  profileImg: {
+    width: vh(99),
+    height: vh(99),
+    borderRadius:vh(50),
+  },
+  profileView: {
+    borderRadius:vh(55),
+    height: vh(110),
+    width: vh(110),
+    borderColor:colors.main,
+    borderWidth:3,
+    justifyContent: 'center',
+    alignItems: 'center',
+    opacity: 0.9,
+  },
   selected: {
     backgroundColor: colors.main,
     paddingHorizontal: vw(30),

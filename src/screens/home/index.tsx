@@ -21,10 +21,7 @@ import {MEAL_FILTERS, NEW_RECIPE} from '../../components/data';
 import {vh, vw} from '../../theme/dimensions';
 
 import {useDispatch, useSelector} from 'react-redux';
-import {
-  addFavorite,
-  removeFavorite,
-} from '../../redux/configure/favouriteSlice';
+
 import {getAuth} from '@react-native-firebase/auth';
 import {getFirestore} from '@react-native-firebase/firestore';
 import {
@@ -46,26 +43,15 @@ const Home = () => {
     return safeFavoriteItems.some(item => item.recipe.recipe.label === label);
   };
 
-  console.log('Is favourite----->>', isFavorite);
+ 
 
   useEffect(() => {
     dispatch(fetchFavoritesFromFirestore());
-    console.log('dispatch done>>>>>');
+  
   }, [dispatch]);
 
   useEffect(() => {
     getTrendyRecipes();
-    // const checkAsyncStorage = async () => {
-    //   try {
-    //     const storedData = await AsyncStorage.getItem('persist:favorites');
-    //     console.log('Stored Data from AsyncStorage:', storedData);
-    //   } catch (error) {
-    //     console.error('Error reading AsyncStorage:', error);
-    //   }
-    // };
-
-    // checkAsyncStorage();
-
     const fetchname = async () => {
       const userId = getAuth().currentUser?.uid;
 
@@ -73,12 +59,10 @@ const Home = () => {
         .collection('users')
         .doc(userId)
         .get();
-      console.log('userdoc---->>', userDoc);
-
+     
       const name = userDoc.data()?.name || '';
       setName(name);
     };
-
     fetchname();
   }, []);
 
@@ -104,7 +88,6 @@ const Home = () => {
       })
       .catch(error => console.log('error', error));
   };
-
   const handlesaveToggle = item => {
     if (isFavorite(item.recipe.label)) {
       dispatch(removeFavoriteRecipe(item));
@@ -115,7 +98,7 @@ const Home = () => {
 
   return (
     <View style={styles.container}>
-      <StatusBar barStyle={'light-content'}  />
+      <StatusBar barStyle={'light-content'} />
 
       <View style={styles.topView}>
         <Image source={Images.top} style={styles.banner} />
@@ -169,7 +152,6 @@ const Home = () => {
               );
             }}
           />
-
           <Text style={styles.heading}>Trendy Recipes</Text>
           <FlatList
             showsHorizontalScrollIndicator={false}
@@ -191,27 +173,15 @@ const Home = () => {
                     <View style={styles.flat}>
                       <Text style={styles.dish}>{item.recipe.label}</Text>
                       <View
-                        style={{
-                          flexDirection: 'row',
-                          justifyContent: 'space-between',
-                          marginTop: vh(10),
-                          marginHorizontal: vw(10),
-                        }}>
+                        style={styles.min}>
                         <View>
-                          <Text style={{color: '#A9A9A9'}}>Time</Text>
+                          <Text style={styles.timeText}>Time</Text>
                           <Text>15 mins</Text>
                         </View>
                         <TouchableOpacity
                           onPress={() => handlesaveToggle(item)}>
                           <View
-                            style={{
-                              height: vh(28),
-                              width: vw(28),
-                              backgroundColor: 'white',
-                              justifyContent: 'center',
-                              alignItems: 'center',
-                              borderRadius: vh(20),
-                            }}>
+                            style={styles.saveView}>
                             <Image
                               source={
                                 favorite ? Images.active : Images.inactive
@@ -224,13 +194,7 @@ const Home = () => {
                     </View>
 
                     <View
-                      style={{
-                        position: 'absolute',
-                        top: 1,
-                        shadowColor: 'rgba(0,0,0,.3)',
-                        shadowOpacity: 10,
-                        elevation:10
-                      }}>
+                      style={styles.trend}>
                       <Image
                         source={{uri: item.recipe.image}}
                         style={styles.trendyIcon}
@@ -263,7 +227,7 @@ const Home = () => {
                 <TouchableOpacity activeOpacity={0.7}>
                   <View key={index} style={styles.newrecipe}>
                     <View style={styles.cards}>
-                      <Text style={{fontSize: 18, fontWeight: '600'}}>
+                      <Text style={styles.totle}>
                         {item.title.substring(0, 15)}...
                       </Text>
                       <View style={{flexDirection: 'row'}}>
@@ -271,62 +235,37 @@ const Home = () => {
                           <Image
                             key={idx}
                             source={Images.star}
-                            style={{
-                              marginHorizontal: 1,
-                              marginTop: 5,
-                              height: 15,
-                              width: 15,
-                            }}
+                            style={styles.star}
                           />
                         ))}
                       </View>
 
                       <View
-                        style={{
-                          flexDirection: 'row',
-                          justifyContent: 'space-between',
-                          marginTop: 15,
-                        }}>
+                        style={styles.newView}>
                         <View
-                          style={{
-                            flexDirection: 'row',
-                            alignItems: 'center',
-                            paddingRight: 30,
-                          }}>
+                          style={styles.innerNew}>
                           <Image
                             source={item.image}
-                            style={{
-                              height: 30,
-                              width: 30,
-                              borderRadius: 10,
-                              marginRight: 10,
-                            }}
+                            style={styles.newImg}
                           />
-                          <Text style={{color: '#A9A9A9', fontSize: 15}}>
+                          <Text style={styles.chefText}>
                             By {item.name}
                           </Text>
                         </View>
                         <View
-                          style={{flexDirection: 'row', alignItems: 'center'}}>
+                          style={styles.innerViews}>
                           <Image
                             source={Images.timer}
-                            style={{height: 19, width: 19, marginRight: 5}}
+                            style={styles.timer}
                           />
-                          <Text style={{color: '#A9A9A9', fontSize: 15}}>
+                          <Text style={styles.mins}>
                             {item.time} mins
                           </Text>
                         </View>
                       </View>
                     </View>
                     <View
-                      style={{
-                        position: 'absolute',
-                        top: 1,
-                        right: 1,
-                        shadowColor: 'rgba(0,0,0,.6)',
-                        shadowOpacity: 10,
-                        elevation:10
-                      }}>
+                      style={styles.recipeImg}>
                       <Image
                         source={item.icon}
                         style={styles.newIcon}
@@ -347,6 +286,81 @@ const Home = () => {
 export default Home;
 
 const styles = StyleSheet.create({
+  recipeImg: {
+    position: 'absolute',
+    top: 1,
+    right: 1,
+    shadowColor: 'rgba(0,0, 0,.6)',
+    shadowOpacity: 10,
+    elevation: 10,
+  },
+  mins: {
+    color: '#A9A9A9',
+    fontSize: 15,
+  },
+  timer: {
+    height: 19,
+    width: 19,
+    marginRight: 5,
+  },
+  innerViews: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  chefText: {
+    color: '#A9A9A9',
+    fontSize: 15,
+  },
+  newImg: {
+    height: 30,
+    width: 30,
+    borderRadius: 10,
+    marginRight: 10,
+  },
+  innerNew: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingRight: 30,
+  },
+  newView: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 15,
+  },
+  star: {
+    marginHorizontal: 1,
+    marginTop: 5,
+    height: 15,
+    width: 15,
+  },
+  totle: {
+    fontSize: 18,
+    fontWeight: '600',
+  },
+  trend: {
+    position: 'absolute',
+    top: 1,
+    shadowColor: 'rgba(0,0,0,.3)',
+    shadowOpacity: 10,
+    elevation: 10,
+  },
+  saveView: {
+    height: vh(28),
+    width: vw(28),
+    backgroundColor: 'white',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: vh(20),
+  },
+  timeText: {
+    color: '#A9A9A9',
+  },
+  min: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: vh(10),
+    marginHorizontal: vw(10),
+  },
   newrecipe: {
     paddingVertical: vh(50),
     backgroundColor: 'white',
@@ -471,7 +485,7 @@ const styles = StyleSheet.create({
     padding: 20,
     shadowColor: 'rgba(0,0,0,.3)',
     shadowOpacity: 6,
-    elevation:10,
+    elevation: 10,
     backgroundColor: 'white',
     justifyContent: 'center',
     alignItems: 'center',
@@ -482,7 +496,7 @@ const styles = StyleSheet.create({
     shadowColor: 'rgba(0,0,0,.3)',
     shadowOpacity: 6,
     backgroundColor: 'white',
-    elevation:10,
+    elevation: 10,
     justifyContent: 'center',
     borderRadius: 10,
   },
@@ -495,14 +509,14 @@ const styles = StyleSheet.create({
     width: 120,
     height: 120,
     borderRadius: 60,
-    elevation:10
+    elevation: 10,
   },
   newIcon: {
     marginTop: 5,
     width: 100,
     height: 100,
     borderRadius: 50,
-    elevation:10
+    elevation: 10,
   },
   category: {
     fontSize: 18,

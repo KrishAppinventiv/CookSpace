@@ -19,55 +19,31 @@ const Notification = () => {
   const [notifications, setNotifications] = useState([]);
   const userId = getAuth().currentUser?.uid;
   const notifyData = [{
-    head:'New Recipe Alert!',
-    description: 'Lorem Ipsum tempor incididunt ut labore et dolore,in voluptate velit esse cillum',
-    time:10,
-    status:'unread'
-
+    head: 'New Recipe Added!',
+    description: 'Check out our latest recipe for a delicious homemade chocolate cake!',
+    time: 10,
+    status: 'unread'
   },{
-    head:'New Recipe Alert!',
-    description: 'Lorem Ipsum tempor incididunt ut labore et dolore,in voluptate velit esse cillum',
-    time:15,
-    status:'read'
+    head: 'Recipe Updated!',
+    description: 'We’ve added new ingredients and instructions to the classic spaghetti carbonara recipe.',
+    time: 15,
+    status: 'read'
   },{
-    head:'New Recipe Alert!',
-    description: 'Lorem Ipsum tempor incididunt ut labore et dolore,in voluptate velit esse cillum',
-    time:12,
-    status:'read'
+    head: 'Special Recipe Alert!',
+    description: 'A new vegan recipe for avocado toast with a twist is now available. Try it out!',
+    time: 12,
+    status: 'read'
   },{
-    head:'New Recipe Alert!',
-    description: 'Lorem Ipsum tempor incididunt ut labore et dolore,in voluptate velit esse cillum',
-    time:12,
-    status:'unread'
+    head: 'Recipe of the Day!',
+    description: 'Today’s featured recipe: Fresh Lemonade. Perfect for a summer day!',
+    time: 12,
+    status: 'unread'
   },{
-    head:'New Recipe Alert!',
-    description: 'Lorem Ipsum tempor incididunt ut labore et dolore,in voluptate velit esse cillum',
-    time:12,
-    status:'read'
+    head: 'Cooking Tip: Save Time!',
+    description: 'Learn how to prep your ingredients quickly with these 5 kitchen hacks for faster cooking!',
+    time: 12,
+    status: 'read'
   }];
-
-
-//   useEffect(() => {
-//   const storeNotification = async () => {
-//     const db = getFirestore();
-//     const userId = getAuth().currentUser?.uid;
-   
-//     if (userId) {
-//     try {
-//       const userDocRef = doc(db, 'users', userId);  
-//       await updateDoc(userDocRef, {
-//         notifications:arrayUnion(...notifyData),  
-//       });
-//       console.log('Notification stored successfully!');
-//     } catch (error) {
-//       console.error('Error storing notification:', error);
-//     }
-//   } else {
-//     console.log('User is not logged in');
-//   }
-//   };
-//   storeNotification();
-// }, []);
 
 const storeNotification = async (notification) => {
   const db = getFirestore();
@@ -105,22 +81,22 @@ useEffect(() => {
       if (userId) {
         const userDocRef = doc(db, 'users', userId);
 
-        // Listen for real-time changes in the notifications field
+      
         const unsubscribe = onSnapshot(userDocRef, (docSnapshot) => {
           if (docSnapshot.exists) {
             const notifications = docSnapshot.data().notifications || [];
-            setNotifications(notifications); // Update state with new notifications
+            setNotifications(notifications); 
           }
         });
 
-        return unsubscribe; // Return the unsubscribe function to stop listening when component unmounts
+        return unsubscribe;
       }
     };
 
-    const unsubscribe = fetchNotifications(); // Start listening
+    const unsubscribe = fetchNotifications(); 
 
     return () => {
-      if (unsubscribe) unsubscribe(); // Clean up the listener
+      if (unsubscribe) unsubscribe(); 
     };
   }, [userId]);
   
@@ -152,12 +128,12 @@ useEffect(() => {
   const renderItem = ({item}) => (<View style={styles.card}>
 
   
-  <View style={{width:'95%'}}>
-   <Text style={{fontSize:vh(17),fontWeight:'600'}}>{item.head}</Text>
-   <Text style={{color:'#A9A9A9',marginTop:vh(10),fontSize:vh(15),lineHeight:vh(22)}}>{item.description}</Text>
-   <Text style={{color:'#A9A9A9',marginTop:vh(8),fontSize:vh(13)}}>{item.time} mins ago</Text>
+  <View style={styles.renderView}>
+   <Text style={styles.head}>{item.head}</Text>
+   <Text style={styles.desc}>{item.description}</Text>
+   <Text style={styles.time}>{item.time} mins ago</Text>
   </View>
-  <View style={{height:vh(28),width:vw(28),backgroundColor:'#FFE1B3',justifyContent:'center',alignItems:'center',borderRadius:vh(10)}}>
+  <View style={styles.source}>
   <Image source={Images.docnotify}/>
   </View>
 
@@ -198,11 +174,7 @@ const handleTabPress = (index) => {
                     },
                   ]}>
                   <Text
-                    style={{
-                      color: selectedTab == index ? 'white' : '#71B1A1',
-                      fontWeight: '800',
-                      fontSize: selectedTab == index ? 14 : 16,
-                    }}>
+                    style={[styles.item, {color: selectedTab == index ? 'white' : '#71B1A1',fontSize:selectedTab == index ? 14 : 16,}]}>
                     {item}
                   </Text>
                 </View>
@@ -212,15 +184,8 @@ const handleTabPress = (index) => {
         />
       </View>
       <View
-        style={{
-          backgroundColor: 'white',
-          alignSelf: 'center',
-
-          padding: 8,
-
-          borderRadius: 5,
-        }}>
-        <Text style={{fontSize: vh(15), fontWeight: '600'}}>{todayDate}</Text>
+        style={styles.date}>
+        <Text style={styles.dateText}>{todayDate}</Text>
       </View>
       <FlatList
         showsVerticalScrollIndicator={false}
@@ -235,6 +200,47 @@ const handleTabPress = (index) => {
 export default Notification;
 
 const styles = StyleSheet.create({
+  dateText: {
+    fontSize: vh(15),
+    fontWeight: '600',
+  },
+  date: {
+    backgroundColor: 'white',
+    alignSelf: 'center',
+    padding: 8,
+    borderRadius: 5,
+  },
+  item: {
+    color: '#71B1A1',
+    fontWeight: '800',
+    fontSize: 16,
+  },
+  source: {
+    height:vh(28),
+    width:vw(28),
+    backgroundColor:'#FFE1B3',
+    justifyContent:'center',
+    alignItems:'center',
+    borderRadius:vh(10),
+  },
+  time: {
+    color:'#A9A9A9',
+    marginTop:vh(8),
+    fontSize:vh(13),
+  },
+  desc: {
+    color:'#A9A9A9',
+    marginTop:vh(10),
+    fontSize:vh(15),
+    lineHeight:vh(22),
+  },
+  head: {
+    fontSize:vh(17),
+    fontWeight:'600',
+  },
+  renderView: {
+    width:'95%',
+  },
   heading: {
     textAlign: 'center',
     fontSize: vh(23),
