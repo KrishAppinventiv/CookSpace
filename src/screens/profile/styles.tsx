@@ -1,0 +1,225 @@
+import {StyleSheet} from 'react-native';
+import {vh, vw} from '../../theme/dimensions';
+import {colors} from '../../theme';
+
+export default StyleSheet.create({
+    upperProfile: {
+        flexDirection: 'row',
+        marginHorizontal: vw(10),
+      },
+      norecipeText: {
+        textAlign:'center',
+        fontSize:vh(24),
+        fontWeight:'600',
+        color:colors.main,
+        marginTop:vh(20),
+        fontFamily:'Poppins',
+      },
+      modalIcon: {
+        marginRight: vw(14),
+        height: vh(20),
+        width: vw(20),
+      },
+      shareIcon: {
+        marginRight: vw(14),
+        height: vh(14),
+        width: vw(20),
+      },
+      serveView: {
+        height:vh(100),
+        width:vh(100),
+      },
+      flatView: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+      },
+      recipes: {
+        marginTop: vh(20),
+        marginHorizontal: vw(20),
+        flex: 1,
+      },
+      moreText: {
+        color: '#71B1A1',
+        lineHeight: vh(18.5),
+        fontSize: vh(13),
+      },
+      decribe: {
+        color: '#A9A9A9',
+        lineHeight: vh(18.5),
+        fontSize: vh(13),
+      },
+      describe: {
+        color: '#A9A9A9',
+        marginTop: vh(12),
+        lineHeight: vh(18.5),
+        fontSize: vh(13),
+      },
+      chefText: {
+        color: '#A9A9A9',
+        lineHeight: vh(16.5),
+      },
+      name: {
+        color: '#121212',
+        fontWeight: '600',
+        fontSize: vh(20),
+        fontFamily: 'Poppins',
+      },
+      informView: {
+        marginHorizontal: vw(21),
+        marginTop: vh(25),
+      },
+      statusText: {
+        color: '#A9A9A9',
+      },
+      status: {
+        textAlign: 'center',
+        marginTop: vh(10),
+        fontSize: vh(20),
+        fontWeight: '600',
+      },
+      statusView: {
+        flex: 1,
+        justifyContent: 'space-between',
+        flexDirection: 'row',
+        marginTop: vh(20),
+        marginHorizontal: vw(30),
+      },
+      profileImg: {
+        width: vh(99),
+        height: vh(99),
+        borderRadius:vh(50),
+      },
+      profileView: {
+        borderRadius:vh(55),
+        height: vh(110),
+        width: vh(110),
+        borderColor:colors.main,
+        borderWidth:3,
+        justifyContent: 'center',
+        alignItems: 'center',
+        opacity: 0.9,
+      },
+      selected: {
+        backgroundColor: colors.main,
+        paddingHorizontal: vw(30),
+        paddingVertical: vh(10),
+        borderRadius: vh(10),
+      },
+      heading: {
+        textAlign: 'center',
+        fontSize: vh(23),
+        fontWeight: '600',
+        alignSelf: 'center',
+      },
+      head: {
+        justifyContent: 'center',
+    
+        textAlign: 'center',
+      },
+      container: {
+        flex: 1,
+        backgroundColor: 'white',
+      },
+      back: {
+        height: vh(20),
+        width: vw(20),
+        marginStart: vw(10),
+      },
+      typeItem: {
+        marginHorizontal: vw(12),
+        marginTop: vh(25),
+        paddingBottom: vh(10),
+      },
+      category: {
+        marginTop: vh(20),
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginHorizontal: vh(20),
+        // borderRadius: 10,
+        // paddingHorizontal: vh(20),
+        // paddingVertical: vw(10),
+      },
+    
+      card: {
+        height: vh(170),
+        marginBottom: vh(15),
+        marginRight: vw(15),
+        backgroundColor: '#f9f9f9',
+        justifyContent: 'flex-end',
+        borderRadius: 10,
+        shadowColor: '#000',
+        shadowOpacity: 0.3,
+        shadowRadius: 10,
+      },
+      recipeImage: {
+        width: '100%',
+        height: '100%',
+        borderRadius: 10,
+      },
+      recipeTitle: {
+        fontSize: 16,
+        fontWeight: '700',
+        marginTop: vh(10),
+        color: 'white',
+      },
+      recipeSource: {
+        fontSize: 12,
+        fontWeight: '500',
+        color: '#F0F0F0',
+        marginTop: vh(4),
+      },
+      transparentView: {
+        height: '100%',
+        width: '100%',
+        position: 'absolute',
+        backgroundColor: 'rgba(0,0,0,.3)',
+        justifyContent: 'flex-end',
+        paddingBottom: vh(15),
+        paddingStart: vw(10),
+        borderRadius: 10,
+      },
+      point: {
+        fontSize: 13,
+        marginLeft: 4,
+      },
+      review: {
+        width: 50,
+        height: 23,
+        position: 'absolute',
+        top: 10,
+        right: 10,
+        backgroundColor: '#FFE1B3',
+        borderRadius: 17,
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+      },
+      tooltipContainer: {
+        position: 'absolute',
+        top: vh(50),
+        right: vw(20),
+        backgroundColor: 'white',
+        padding: vh(10),
+        borderRadius: 8,
+        shadowColor: 'rgba(0,0,0,.3)',
+        shadowOpacity: 10,
+        elevation: 5,
+      },
+      tooltipItem: {
+        paddingVertical: vh(10),
+        paddingHorizontal: vw(15),
+        flexDirection: 'row',
+      },
+      tooltipText: {
+        fontSize: 17,
+        color: colors.black,
+        fontWeight: '500',
+        fontFamily: 'Poppins',
+      },
+      modalBackground: {
+        flex: 1,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+      },
+})

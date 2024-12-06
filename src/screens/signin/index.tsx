@@ -18,7 +18,6 @@ import {ScreenNames} from '../../navigator/screenNames';
 import {firebase} from '../../firebaseConfig';
 import styles from './styles';
 import {vh} from '../../theme/dimensions';
-
 import Button from '../../components/Button';
 import InputField from '../../components/TextInput';
 

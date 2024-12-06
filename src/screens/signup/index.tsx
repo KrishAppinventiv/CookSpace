@@ -18,43 +18,45 @@ import auth from '@react-native-firebase/auth';
 import {getFirestore, FieldValue} from '@react-native-firebase/firestore';
 import {vh, vw} from '../../theme/dimensions';
 import InputField from '../../components/TextInput';
+import styles from './styles';
 
 const Signup = () => {
-  const [Email, SetEmail] = useState('');
-  const [Name, SetName] = useState('');
-  const [Password, SetPassword] = useState('');
-  const [CnfrmPassword, SetCnfrmPassword] = useState('');
-  const [emailError, setEmailError] = useState('');
-  const [passwordError, setPasswordError] = useState('');
-  const [cnfrmpasswordError, setCnfrmPasswordError] = useState('');
+  const [Email, SetEmail] = useState<FormFieldState>('');
+  const [Name, SetName] = useState<FormFieldState>('');
+  const [Password, SetPassword] = useState<FormFieldState>('');
+  const [CnfrmPassword, SetCnfrmPassword] = useState<FormFieldState>('');
+  const [emailError, setEmailError] = useState<ErrorState>('');
+  const [passwordError, setPasswordError] = useState<ErrorState>('');
+  const [cnfrmpasswordError, setCnfrmPasswordError] = useState<ErrorState>('');
   const navigation = useNavigation();
-  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
-  const [isPasswordVisible2, setIsPasswordVisible2] = useState(false);
-  const nameInputRef = useRef(null);
-  const emailInputRef = useRef(null);
-  const confrmpasswordInputRef = useRef(null);
-  const passwordInputRef = useRef(null);
+  const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
+  const [isPasswordVisible2, setIsPasswordVisible2] = useState<boolean>(false);
+  const nameInputRef = useRef<TextInput | null>(null);
+  const emailInputRef = useRef<TextInput | null>(null);
+  const confrmpasswordInputRef = useRef<TextInput | null>(null);
+  const passwordInputRef = useRef<TextInput | null>(null);
 
-  const validateEmail = email => {
+  type ErrorState = string;
+  type FormFieldState = string;
+
+  const validateEmail =(email: string): boolean => {
     if (!validator.isEmail(email)) {
       setEmailError('Invalid Email format');
       return false;
     } else {
       setEmailError('');
     }
-    if (email !== 'Krishcs279@gmail.com') {
-      return false;
-    }
+   
     return true;
   };
 
   useEffect(() => {
     setTimeout(() => {
-        nameInputRef.current?.focus();
+      nameInputRef.current?.focus();
     }, 100);
   }, []);
 
-  const validatePassword = password => {
+  const validatePassword = (password: string): boolean  => {
     if (password.length < 6) {
       setPasswordError('Password should have at least 6 characters');
       return false;
@@ -64,13 +66,11 @@ const Signup = () => {
     return true;
   };
 
-  const handleTextChange = (text, field) => {
+  const handleTextChange = (text: string, field: 'email' | 'password' | 'cnfrmPassword' | 'name') => {
     if (field === 'email') {
       SetEmail(text.toLowerCase());
-      
     } else if (field === 'password') {
       SetPassword(text);
-      
     } else if (field === 'cnfrmPassword') {
       SetCnfrmPassword(text);
     } else if (field === 'name') {
@@ -78,17 +78,17 @@ const Signup = () => {
     }
   };
 
-  const validateCnfrmPassword = cnfrmpassword => {
-          if(Password!=cnfrmpassword){
-            setCnfrmPasswordError('Password should be match')
-            return false;
-          }else{
-            setCnfrmPasswordError('')
-          }
-          return true;
+  const validateCnfrmPassword = (cnfrmpassword: string): boolean => {
+    if (Password != cnfrmpassword) {
+      setCnfrmPasswordError('Password should be match');
+      return false;
+    } else {
+      setCnfrmPasswordError('');
+    }
+    return true;
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (): Promise<void> => {
     const firestore = getFirestore();
     console.log(firestore);
     try {
@@ -115,13 +115,13 @@ const Signup = () => {
           PostItem: [],
         });
         console.log('User data saved to Firestore successfully!');
-        navigation.navigate(ScreenNames.Signin); 
+        navigation.navigate(ScreenNames.Signin);
       } else {
         Alert.alert(
           'There was an error saving your data. Please try again later.',
         );
       }
-    } catch (error) {
+    } catch (error:any) {
       console.error('Error saving user data to Firestore:', error);
 
       if (error.code === 'auth/email-already-in-use') {
@@ -136,9 +136,7 @@ const Signup = () => {
     }
   };
 
-  const handleNextFocus = (nextInputRef) => {
-    nextInputRef.current?.focus();
-  };
+ 
 
   return (
     <SafeAreaView style={styles.container}>
@@ -153,36 +151,34 @@ const Signup = () => {
 
         <View style={styles.textInputContain}>
           <View style={styles.inputContainer}>
-          <InputField
-            ref={nameInputRef}
-            placeholder="Name"
-            value={Name}
-            onChangeText={(text) => handleTextChange(text, 'name')}
-            returnKeyType="next"
-            onSubmitEditing={()=> {
-
-                emailInputRef.current.focus()
-            }}
-            style={emailError ? { borderColor: 'red' } : {}}
-          />
+            <InputField
+              ref={nameInputRef}
+              placeholder="Name"
+              value={Name}
+              onChangeText={text => handleTextChange(text, 'name')}
+              returnKeyType="next"
+              onSubmitEditing={() => {
+                emailInputRef.current?.focus();
+              }}
+              style={emailError ? {borderColor: 'red'} : {}}
+            />
           </View>
 
           <View
             style={[styles.inputContainer, emailError && {borderColor: 'red'}]}>
-              <InputField
-            ref={emailInputRef}
-            placeholder="Email Address"
-            value={Email}
-            onChangeText={(text) => handleTextChange(text, 'email')}
-            returnKeyType="next"
-            onSubmitEditing={()=> {
-                    validateEmail(Email)
-                    passwordInputRef.current?.focus();
-                  
-            }}
-            style={emailError ? { borderColor: 'red' } : {}}
-          />
-          {emailError && <Text style={styles.errorText}>{emailError}</Text>}
+            <InputField
+              ref={emailInputRef}
+              placeholder="Email Address"
+              value={Email}
+              onChangeText={text => handleTextChange(text, 'email')}
+              returnKeyType="next"
+              onSubmitEditing={() => {
+                validateEmail(Email);
+                passwordInputRef.current?.focus();
+              }}
+              style={emailError ? {borderColor: 'red'} : {}}
+            />
+            {emailError && <Text style={styles.errorText}>{emailError}</Text>}
           </View>
 
           <View
@@ -191,20 +187,19 @@ const Signup = () => {
               passwordError && {borderColor: 'red'},
             ]}>
             <View style={styles.passwordContain}>
-            <InputField
-            ref={passwordInputRef}
-            placeholder="Password"
-            value={Password}
-            onChangeText={(text) => handleTextChange(text, 'password')}
-            returnKeyType="next"
-            onSubmitEditing={()=> {
-                validatePassword(Password)
-                confrmpasswordInputRef.current?.focus();
-              
-        }}
-            style={passwordError ? { borderColor: 'red' } : {}}
-            secureTextEntry={!isPasswordVisible}
-          />
+              <InputField
+                ref={passwordInputRef}
+                placeholder="Password"
+                value={Password}
+                onChangeText={text => handleTextChange(text, 'password')}
+                returnKeyType="next"
+                onSubmitEditing={() => {
+                  validatePassword(Password);
+                  confrmpasswordInputRef.current?.focus();
+                }}
+                style={passwordError ? {borderColor: 'red'} : {}}
+                secureTextEntry={!isPasswordVisible}
+              />
               <TouchableOpacity
                 onPress={() => setIsPasswordVisible(prev => !prev)}>
                 <Image
@@ -214,7 +209,9 @@ const Signup = () => {
               </TouchableOpacity>
             </View>
 
-            {passwordError && <Text style={styles.errorText}>{passwordError}</Text>}
+            {passwordError && (
+              <Text style={styles.errorText}>{passwordError}</Text>
+            )}
           </View>
 
           <View
@@ -223,24 +220,24 @@ const Signup = () => {
               cnfrmpasswordError && {borderColor: 'red'},
             ]}>
             <View style={styles.passwordContain}>
-            <InputField
-            ref={confrmpasswordInputRef}
-            placeholder="Confirm Password"
-            value={CnfrmPassword}
-            onSubmitEditing={() =>{
-                if(validateCnfrmPassword(CnfrmPassword)){
-                    handleSubmit()
-                }else{
+              <InputField
+                ref={confrmpasswordInputRef}
+                placeholder="Confirm Password"
+                value={CnfrmPassword}
+                onSubmitEditing={() => {
+                  if (validateCnfrmPassword(CnfrmPassword)) {
+                    handleSubmit();
+                  } else {
                     setTimeout(() => {
-                        confrmpasswordInputRef.current?.focus();
-                    }, 100);    
-                }
+                      confrmpasswordInputRef.current?.focus();
+                    }, 100);
+                  }
                 }}
-            onChangeText={(text) => handleTextChange(text, 'cnfrmPassword')}
-            style={cnfrmpasswordError ? { borderColor: 'red' } : {}}
-            secureTextEntry={!isPasswordVisible2}
-          />
-             <TouchableOpacity
+                onChangeText={text => handleTextChange(text, 'cnfrmPassword')}
+                style={cnfrmpasswordError ? {borderColor: 'red'} : {}}
+                secureTextEntry={!isPasswordVisible2}
+              />
+              <TouchableOpacity
                 onPress={() => setIsPasswordVisible2(prev => !prev)}>
                 <Image
                   source={isPasswordVisible2 ? Images.eye : Images.hide}
@@ -250,19 +247,18 @@ const Signup = () => {
             </View>
 
             {cnfrmpasswordError && (
-            <Text style={styles.errorText}>{cnfrmpasswordError}</Text>
-          )}
+              <Text style={styles.errorText}>{cnfrmpasswordError}</Text>
+            )}
           </View>
         </View>
 
-       
         <View style={styles.touchContain}>
           <TouchableOpacity style={styles.touch} onPress={handleSubmit}>
             <Text style={styles.text}>Sign Up</Text>
           </TouchableOpacity>
         </View>
 
-<View style={styles.footerContain}>
+        <View style={styles.footerContain}>
           <View style={styles.footerView}></View>
           <Text style={styles.option}>Or</Text>
           <View style={styles.footerView}></View>
@@ -276,8 +272,7 @@ const Signup = () => {
             </View>
           </TouchableOpacity>
         </View>
-        <View
-          style={styles.already}>
+        <View style={styles.already}>
           <Text>Already have an account?</Text>
           <TouchableOpacity
             onPress={() => navigation.navigate(ScreenNames.Signin)}>
@@ -290,214 +285,3 @@ const Signup = () => {
 };
 
 export default Signup;
-
-const styles = StyleSheet.create({
-  already: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginTop: vh(30),
-  },
-  signupColor: {
-    color: '#FF9C00',
-  },
-  
-  gap: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginTop: vh(30),
-  },
-  container: {
-    flex: 1,
-    backgroundColor: '#ffffff',
-  },
-  img: {
-    marginTop: 20,
-    height: 42,
-    width: 120,
-  },
-  imageContain: {
-    marginTop: 10,
-    marginStart: 30,
-    marginBottom: 40,
-  },
-  signText: {
-    color: '#000000',
-    fontSize: 30,
-    fontWeight: '700',
-  },
-
-  welText: {
-    color: '#000000',
-    fontSize: vh(12),
-    fontWeight: '400',
-    fontFamily: 'Poppins',
-    marginStart:vw(3)
-  },
-  blurBackground: {
-    opacity: 0.6,
-  },
-  textContain: {
-    marginTop: vh(30),
-    marginHorizontal:vw(20)
-  },
-  greyText: {
-    color: 'grey',
-    marginTop: 10,
-    width: 270,
-    fontSize: 15,
-    fontWeight: '600',
-  },
-  input: {
-    alignItems: 'center',
-    padding: 10,
-    color: 'black',
-  },
-  inputContainer: {
-    padding: 10,
-    width: vw(325),
-    borderRadius: 7,
-    borderColor: '#ccc',
-    borderWidth: 1,
-    backgroundColor: 'white',
-    marginBottom: vh(25),
-  },
-
-  inputContainer1: {
-    padding: 10,
-    width: vw(325),
-    borderRadius: 7,
-    borderColor: '#ccc',
-    borderWidth: 1,
-    backgroundColor: 'white',
-  },
-
-  textInputContain: {
-    marginHorizontal: vw(20),
-    marginTop: 40,
-    alignItems: 'center',
-  },
-  touch: {
-    marginTop: 15,
-    paddingHorizontal: 130,
-    paddingVertical: 20,
-    backgroundColor: '#129575',
-    borderRadius: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-
-  text: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: 'white',
-  },
-  touchContain: {
-    marginTop:vh(20),
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-
-  errorText: {
-    color: 'red',
-    fontSize: 12,
-    marginTop: 5,
-    marginLeft: 10,
-  },
-  img2: {
-    height: 16,
-    width: 16,
-    marginEnd: 10,
-    alignItems: 'center',
-  },
-  passwordContain: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-
-  signupContainer: {
-    flex: 1,
-    marginTop: vh(10),
-    paddingBottom: vh(40),
-    marginBottom: vh(10),
-  },
-  errorContain: {
-    height: 65,
-    width: 350,
-    borderRadius: 7,
-    marginStart: 35,
-    backgroundColor: '#ffe8e7',
-
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 30,
-  },
-  redText: {
-    color: 'black',
-    padding: 10,
-    fontSize: 13,
-    fontWeight: '400',
-  },
-  forget: {
-    marginStart: 39,
-    marginTop: 25,
-    marginBottom: 25,
-  },
-  forgetText: {
-    color: '#FFAD30',
-    fontWeight: '600',
-  },
-
-  content: {
-    marginStart: 50,
-    marginTop: 20,
-  },
-
-  instructionText: {
-    paddingHorizontal: 12,
-    color: 'grey',
-    fontSize: 12,
-  },
-  instruction: {
-    marginTop: 17,
-    marginBottom: 10,
-  },
-  google: {
-    height: vh(28),
-    width: vw(28),
-    marginRight: vw(6),
-  },
-  googleView: {
-    elevation: 2,
-    justifyContent: 'center',
-    alignItems: 'center',
-    flexDirection: 'row',
-    shadowColor: '#C3C3C3',
-    shadowOpacity: 5,
-    shadowRadius: 3,
-    backgroundColor: 'white',
-    borderRadius: 10,
-    padding: 15,
-  },
-  otherOption: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: vh(30),
-  },
-
-  option: {
-    marginHorizontal: 10,
-    color: '#c7c7c7',
-  },
-  footerView: {
-    height: 1,
-    width: 30,
-    backgroundColor: '#c7c7c7',
-    alignSelf: 'center',
-  },
-  footerContain: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginTop: vh(30),
-  },
-});

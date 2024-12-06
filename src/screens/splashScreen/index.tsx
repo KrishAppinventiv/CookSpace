@@ -6,7 +6,9 @@ import {CommonActions, useNavigation} from '@react-navigation/native';
 import {ScreenNames} from '../../navigator/screenNames';
 import Splash from 'react-native-splash-screen';
 import {getAuth} from '@react-native-firebase/auth';
+
 import {getFirestore} from '@react-native-firebase/firestore';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 const SplashScreen = () => {
   const [fadeAnim] = useState(new Animated.Value(0));
   const navigation: any = useNavigation();
@@ -23,12 +25,20 @@ const SplashScreen = () => {
     setTimeout(() => {
       if (true) {
         const checkAuthStatus = async () => {
+
           const user = getAuth().currentUser;
+          const hasSeenTutorial = await AsyncStorage.getItem('hasSeenTutorial');
           if (user) {
             console.log('User UID:', user.uid);
             navigation.replace(ScreenNames.BottomTab);
           } else {
-            navigation.replace(ScreenNames.Signin);
+            if (hasSeenTutorial === 'true') {
+            
+              navigation.replace(ScreenNames.Signin);
+            } else {
+             
+              navigation.replace(ScreenNames.Tutorial);
+            }
           }
         };
 
