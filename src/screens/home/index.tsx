@@ -106,6 +106,9 @@ const Home = () => {
         <Image source={Images.top} style={styles.banner} />
 
         <View style={styles.transparentView}>
+          <View style={styles.margin}>
+
+         
           <Text style={styles.logo}>Hello, {name.split(' ').shift()}</Text>
           <Text style={styles.cookText}>What are you cooking today?</Text>
           <TouchableOpacity
@@ -114,11 +117,11 @@ const Home = () => {
             onPress={() => navigation.navigate(ScreenNames.Search)}>
             <Image
               source={Images.search}
-              style={{height: vh(30), width: vw(30)}}
+              style={styles.searchImg}
             />
             <Text style={styles.placeholder}>Please search here...</Text>
           </TouchableOpacity>
-
+          </View>
           <Text style={styles.searchRecipe}>
             Search 1000+ recipes easily with one click
           </Text>

@@ -139,49 +139,49 @@ export default StyleSheet.create({
     position: 'absolute',
     backgroundColor: 'rgba(0,0,0,.4)',
     justifyContent: 'center',
-    alignItems: 'center',
+    // alignItems: 'center',
     borderBottomStartRadius: vh(15),
     borderBottomEndRadius: vh(15),
   },
   searchBox: {
-    width: '90%',
-    height: 60,
+    
+    height: vh(60),
 
     backgroundColor: 'white',
     borderRadius: 8,
     flexDirection: 'row',
     alignItems: 'center',
     paddingLeft: 10,
-    marginTop: 60,
+    marginTop: vh(50),
   },
   placeholder: {
     marginLeft: 15,
-    fontSize: 16,
+    fontSize: vh(16),
     color: '#9e9e9e',
   },
   logo: {
-    fontSize: 30,
+    fontSize: vh(30),
     color: 'white',
-    position: 'absolute',
-    top: 60,
-    left: 20,
+    // position: 'absolute',
+    // top: 60,
+    // left: 20,
     fontFamily: 'Poppins',
     fontWeight: '600',
   },
   cookText: {
-    fontSize: 20,
+    fontSize: vh(20),
     color: '#E6E6E6',
-    position: 'absolute',
-    top: 95,
-    left: 20,
+    // position: 'absolute',
+    // top: 95,
+    // left: 20,
     fontWeight: '500',
   },
   searchRecipe: {
-    fontSize: 18,
+    fontSize: vh(17),
     color: 'white',
 
     alignSelf: 'center',
-    marginTop: 15,
+    marginTop: vh(10),
     fontWeight: '600',
   },
   heading: {
@@ -260,4 +260,10 @@ export default StyleSheet.create({
     alignItems: 'center',
     height: '100%',
   },
+  margin:{
+    marginHorizontal:vw(15)
+  },
+  searchImg:{
+    height: vh(30), width: vw(30)
+  }
 });

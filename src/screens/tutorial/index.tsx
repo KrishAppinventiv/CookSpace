@@ -2,13 +2,19 @@ import {View, Text,ImageBackground, StyleSheet, TouchableOpacity,Image} from 're
 import React, {useEffect} from 'react';
 import { Images } from '../../assets';
 import { useNavigation } from '@react-navigation/native';
-import { ScreenNames } from '../../navigator/screenNames';
+
 import { firebase } from '../../firebaseConfig';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import styles from './styles';
 
+import { ScreenNames } from '../../navigator/screenNames';
+import { RootStackParamList } from '../../navigator/types';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+
+type SigninScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, ScreenNames.Home>;
+
 const Tutorial = () => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<SigninScreenNavigationProp>();
   useEffect(() => {
 
     AsyncStorage.setItem('hasSeenTutorial', 'true');

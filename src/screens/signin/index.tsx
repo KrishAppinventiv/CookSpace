@@ -20,6 +20,10 @@ import styles from './styles';
 import {vh} from '../../theme/dimensions';
 import Button from '../../components/Button';
 import InputField from '../../components/TextInput';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../../navigator/types';
+
+type SigninScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, ScreenNames.Signin>;
 
 const Signin = () => {
   const [Email, SetEmail] = useState('');
@@ -27,14 +31,14 @@ const Signin = () => {
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const [accountError, setAccountError] = useState(false);
-  const navigation = useNavigation();
+  const navigation = useNavigation<SigninScreenNavigationProp>();
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [resetPasswordEmailSent, setResetPasswordEmailSent] = useState(false);
   const emailInputRef = useRef(null);
   const passwordInputRef = useRef(null);
 
-  const validateEmail = email => {
+  const validateEmail = (email: string): boolean => {
     if (!validator.isEmail(email)) {
       setEmailError('Invalid Email format');
       return false;
@@ -52,7 +56,7 @@ const Signin = () => {
    
   }, []);
 
-  const validatePassword = password => {
+  const validatePassword = (password: string): boolean => {
     if (password.length < 6) {
       setPasswordError('Password should have at least 6 characters');
       return false;

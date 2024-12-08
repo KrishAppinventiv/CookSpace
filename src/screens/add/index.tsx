@@ -29,8 +29,10 @@ import Button from '../../components/Button';
 import InputField from '../../components/TextInput';
 import AddInputFieldButton from '../../components/AddInputFieldButton';
 import styles from './styles';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../../navigator/types';
 
-
+type AddScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, ScreenNames.Profile>;
 const db = getFirestore();
 interface RecipeData {
   label: string;
@@ -47,7 +49,7 @@ interface RecipeData {
 }
 
 const Add = () => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<AddScreenNavigationProp>();
   const [imgUri, SetImgUri] = useState(false);
   const [cook, setCook] = useState('');
   const [isTooltipVisible, setTooltipVisible] = useState(false);

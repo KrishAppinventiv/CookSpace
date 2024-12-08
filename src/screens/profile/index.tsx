@@ -21,10 +21,13 @@ import {ScreenNames} from '../../navigator/screenNames';
 import {getFirestore} from '@react-native-firebase/firestore';
 import {getAuth, signOut} from '@react-native-firebase/auth';
 import styles from './styles';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../../navigator/types';
 
+type ProfileScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, ScreenNames.Profile>;
 
 const Profile = () => {
-  const navigation: any = useNavigation();
+  const navigation: any = useNavigation<ProfileScreenNavigationProp>();
   const [selectedTab, setSelectedTab] = useState('Recipe');
   const [name, setName] = useState('');
   const [url, setUrl] = useState('');

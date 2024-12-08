@@ -26,6 +26,10 @@ import {
   HEALTH_FILTERS,
 } from '../../components/data';
 import styles from './styles';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../../navigator/types';
+
+type SearchScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, ScreenNames.Signin>;
 
 const Search = () => {
   const [search, setSearch] = useState('');
@@ -40,7 +44,7 @@ const Search = () => {
 
   const [ShowModal, setShowModal] = useState(false);
 
-  const navigation: any = useNavigation();
+  const navigation: any = useNavigation<SearchScreenNavigationProp>();
 
 
 

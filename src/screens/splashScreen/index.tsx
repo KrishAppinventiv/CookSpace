@@ -34,7 +34,7 @@ const SplashScreen = () => {
           } else {
             if (hasSeenTutorial === 'true') {
             
-              navigation.replace(ScreenNames.Signin);
+              navigation.replace(ScreenNames.Tutorial);
             } else {
              
               navigation.replace(ScreenNames.Tutorial);

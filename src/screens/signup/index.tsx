@@ -19,6 +19,12 @@ import {getFirestore, FieldValue} from '@react-native-firebase/firestore';
 import {vh, vw} from '../../theme/dimensions';
 import InputField from '../../components/TextInput';
 import styles from './styles';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../../navigator/types';
+
+
+type SignupScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, ScreenNames.Signup>;
+
 
 const Signup = () => {
   const [Email, SetEmail] = useState<FormFieldState>('');
@@ -28,7 +34,7 @@ const Signup = () => {
   const [emailError, setEmailError] = useState<ErrorState>('');
   const [passwordError, setPasswordError] = useState<ErrorState>('');
   const [cnfrmpasswordError, setCnfrmPasswordError] = useState<ErrorState>('');
-  const navigation = useNavigation();
+  const navigation = useNavigation<SignupScreenNavigationProp>();
   const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
   const [isPasswordVisible2, setIsPasswordVisible2] = useState<boolean>(false);
   const nameInputRef = useRef<TextInput | null>(null);
@@ -38,6 +44,8 @@ const Signup = () => {
 
   type ErrorState = string;
   type FormFieldState = string;
+
+  
 
   const validateEmail =(email: string): boolean => {
     if (!validator.isEmail(email)) {
