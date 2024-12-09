@@ -2917,7 +2917,11 @@ PODS:
     - React-perflogger (= 0.76.1)
     - React-utils (= 0.76.1)
   - RecaptchaInterop (100.0.0)
+<<<<<<< HEAD
    - RNCAsyncStorage (1.24.0):
+=======
+  - RNCAsyncStorage (1.24.0):
+>>>>>>> 5237ded45a4a4afaa2ca131df42d83fb7b154f31
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2945,11 +2949,13 @@ PODS:
     - Firebase/Auth (= 11.4.0)
     - React-Core
     - RNFBApp
-  - RNFBFirestore (21.4.0):
-    - Firebase/Firestore (<= 11.4.0)
+  - RNFBFirestore (21.6.1):
+    - Firebase/Firestore (= 11.4.0)
     - React-Core
     - RNFBApp
-  - RNScreens (3.35.0):
+  - RNFS (2.20.0):
+    - React-Core
+  - RNScreens (4.3.0):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2970,9 +2976,9 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - RNScreens/common (= 3.35.0)
+    - RNScreens/common (= 4.3.0)
     - Yoga
-  - RNScreens/common (3.35.0):
+  - RNScreens/common (4.3.0):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -3069,6 +3075,7 @@ DEPENDENCIES:
   - "RNFBApp (from `../node_modules/@react-native-firebase/app`)"
   - "RNFBAuth (from `../node_modules/@react-native-firebase/auth`)"
   - "RNFBFirestore (from `../node_modules/@react-native-firebase/firestore`)"
+  - RNFS (from `../node_modules/react-native-fs`)
   - RNScreens (from `../node_modules/react-native-screens`)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
@@ -3235,6 +3242,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-firebase/auth"
   RNFBFirestore:
     :path: "../node_modules/@react-native-firebase/firestore"
+  RNFS:
+    :path: "../node_modules/react-native-fs"
   RNScreens:
     :path: "../node_modules/react-native-screens"
   Yoga:
@@ -3325,11 +3334,12 @@ SPEC CHECKSUMS:
   ReactCodegen: 13fc33b956caafe5244ac3e0522aa38426b504ca
   ReactCommon: 08db07e471b7ee1cadfa9e347c8224fd4cefc4b5
   RecaptchaInterop: 7d1a4a01a6b2cb1610a47ef3f85f0c411434cb21
-  RNCAsyncStorage: d494bdee892cc6a4d790c960afb7b5dd1d91abb1
+  RNCAsyncStorage: ed97da7a45c1af0c6a938c8b66da1ec24792fcab
   RNFBApp: 7d86f16d7babfc22ad4c1e95728a25c3008681ee
   RNFBAuth: 2e8325e4879916700da70d63078a5bf7aa5bb8b6
-  RNFBFirestore: 28d7bf76ed99961318e0f9bfffa94612588c64a0
-  RNScreens: f493b156fe5de2434806b5a2c410800b2cd76c0e
+  RNFBFirestore: f7b2312c5fc205e095a938edf8d54c0ac2b8b8d4
+  RNFS: 4ac0f0ea233904cb798630b3c077808c06931688
+  RNScreens: 9ec20e849e0df1376c072235ff123f59cdf71287
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
   Yoga: 83048fe4b4ce15018a5e9ccbf0b06bd76fc643d4
 
