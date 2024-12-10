@@ -127,14 +127,14 @@ const Search = () => {
       .then(response => response.json())
       .then(result => {
         setRecipes(result.hits);
-        console.log('actual data---->>>', result.hits);
+       
         if (result.hits.length > 0) {
           setPreviousSearches(result.hits);
         }
         setLoading(false);
       })
       .catch(error => {
-        console.log('error', error);
+        
         setLoading(false);
       });
   };

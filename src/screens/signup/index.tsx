@@ -19,12 +19,14 @@ import {getFirestore, FieldValue} from '@react-native-firebase/firestore';
 import {vh, vw} from '../../theme/dimensions';
 import InputField from '../../components/TextInput';
 import styles from './styles';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../../navigator/types';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import {RootStackParamList} from '../../navigator/types';
+import CustomModal from '../../components/CustomModal';
 
-
-type SignupScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, ScreenNames.Signup>;
-
+type SignupScreenNavigationProp = NativeStackNavigationProp<
+  RootStackParamList,
+  ScreenNames.Signup
+>;
 
 const Signup = () => {
   const [Email, SetEmail] = useState<FormFieldState>('');
@@ -41,20 +43,19 @@ const Signup = () => {
   const emailInputRef = useRef<TextInput | null>(null);
   const confrmpasswordInputRef = useRef<TextInput | null>(null);
   const passwordInputRef = useRef<TextInput | null>(null);
-
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalMessage, setModalMessage] = useState('');
   type ErrorState = string;
   type FormFieldState = string;
 
-  
-
-  const validateEmail =(email: string): boolean => {
+  const validateEmail = (email: string): boolean => {
     if (!validator.isEmail(email)) {
       setEmailError('Invalid Email format');
       return false;
     } else {
       setEmailError('');
     }
-   
+
     return true;
   };
 
@@ -64,7 +65,7 @@ const Signup = () => {
     }, 100);
   }, []);
 
-  const validatePassword = (password: string): boolean  => {
+  const validatePassword = (password: string): boolean => {
     if (password.length < 6) {
       setPasswordError('Password should have at least 6 characters');
       return false;
@@ -74,7 +75,10 @@ const Signup = () => {
     return true;
   };
 
-  const handleTextChange = (text: string, field: 'email' | 'password' | 'cnfrmPassword' | 'name') => {
+  const handleTextChange = (
+    text: string,
+    field: 'email' | 'password' | 'cnfrmPassword' | 'name',
+  ) => {
     if (field === 'email') {
       SetEmail(text.toLowerCase());
     } else if (field === 'password') {
@@ -104,11 +108,10 @@ const Signup = () => {
         Email,
         Password,
       );
-      console.log('User created successfully');
+      setModalMessage('User created successfully');
+      setModalVisible(true);
 
       const user = userCredential.user;
-      console.log('Saving user data to Firestore...');
-
       const userDocRef = firestore.collection('users').doc(user.uid);
       console.log(userDocRef);
 
@@ -122,29 +125,32 @@ const Signup = () => {
           savedItem: [],
           PostItem: [],
         });
-        console.log('User data saved to Firestore successfully!');
-        navigation.navigate(ScreenNames.Signin);
-      } else {
-        Alert.alert(
-          'There was an error saving your data. Please try again later.',
-        );
-      }
-    } catch (error:any) {
-      console.error('Error saving user data to Firestore:', error);
 
-      if (error.code === 'auth/email-already-in-use') {
-        Alert.alert('The email address is already in use by another account.');
-      } else if (error.code === 'auth/invalid-email') {
-        Alert.alert('The email address is not valid.');
-      } else if (error.code === 'auth/weak-password') {
-        Alert.alert('Password should be at least 6 characters.');
+        setTimeout(() => {
+          navigation.navigate(ScreenNames.Signin);
+        }, 2000);
       } else {
-        Alert.alert('An error occurred. Please try again.');
+        setModalMessage('An error occurred. Please try again.');
+        setModalVisible(true);
+      }
+    } catch (error: any) {
+      if (error.code === 'auth/email-already-in-use') {
+        setModalMessage(
+          'The email address is already in use by another account.',
+        );
+        setModalVisible(true);
+      } else if (error.code === 'auth/invalid-email') {
+        setModalMessage('The email address is not valid.');
+        setModalVisible(true);
+      } else if (error.code === 'auth/weak-password') {
+        setModalMessage('Password should be at least 6 characters.');
+        setModalVisible(true);
+      } else {
+        setModalMessage('An error occurred. Please try again.');
+        setModalVisible(true);
       }
     }
   };
-
- 
 
   return (
     <SafeAreaView style={styles.container}>
@@ -288,6 +294,12 @@ const Signup = () => {
           </TouchableOpacity>
         </View>
       </ScrollView>
+
+      <CustomModal
+        visible={modalVisible}
+        message={modalMessage}
+        onClose={() => setModalVisible(false)}
+      />
     </SafeAreaView>
   );
 };

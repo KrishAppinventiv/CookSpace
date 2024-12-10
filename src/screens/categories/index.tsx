@@ -38,13 +38,13 @@ const Categories = () => {
 
   const categoryTitle = route.params?.category.title;
 
-  console.log(categoryTitle);
+ 
 
   useEffect(() => {
     if (categoryTitle) {
       getCategoryRecipes(categoryTitle);
     } else {
-      console.error('Category title is missing.');
+     
     }
   }, [categoryTitle]);
 
@@ -65,7 +65,7 @@ const Categories = () => {
     )
       .then(response => response.json())
       .then(result => {
-        console.log('Search Results:', result.hits);
+       
         setRecipes(result.hits);
         setLoading(false);
       })

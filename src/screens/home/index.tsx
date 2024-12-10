@@ -30,26 +30,35 @@ import {
   removeFavoriteRecipe,
 } from '../../redux/firebaseActions';
 import styles from './styles';
+import FastImage from 'react-native-fast-image';
+import {colors} from '../../theme';
 
+type Recipe = {
+  recipe: {
+    label: string;
+    image: string | null;
+    [key: string]: any;
+  };
+};
 
 const Home = () => {
   const navigation: any = useNavigation();
-  const [recipes, setRecipes] = useState([]);
+  const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadingImg, setLoadingImg] = useState(true);
   const [name, setName] = useState('');
   const dispatch = useDispatch();
-  const favoriteItems = useSelector(state => state.favorites.items || []);
-  console.log('Home favourite----->>', favoriteItems);
-  const isFavorite = label => {
+  const favoriteItems = useSelector(
+    (state: any) => state.favorites.items || [],
+  );
+ 
+  const isFavorite = (label: string): boolean => {
     const safeFavoriteItems = Array.isArray(favoriteItems) ? favoriteItems : [];
     return safeFavoriteItems.some(item => item.recipe.recipe.label === label);
   };
 
- 
-
   useEffect(() => {
     dispatch(fetchFavoritesFromFirestore());
-  
   }, [dispatch]);
 
   useEffect(() => {
@@ -61,7 +70,7 @@ const Home = () => {
         .collection('users')
         .doc(userId)
         .get();
-     
+
       const name = userDoc.data()?.name || '';
       setName(name);
     };
@@ -98,6 +107,7 @@ const Home = () => {
     }
   };
 
+  
   return (
     <View style={styles.container}>
       <StatusBar barStyle={'light-content'} />
@@ -107,20 +117,15 @@ const Home = () => {
 
         <View style={styles.transparentView}>
           <View style={styles.margin}>
-
-         
-          <Text style={styles.logo}>Hello, {name.split(' ').shift()}</Text>
-          <Text style={styles.cookText}>What are you cooking today?</Text>
-          <TouchableOpacity
-            activeOpacity={0.8}
-            style={styles.searchBox}
-            onPress={() => navigation.navigate(ScreenNames.Search)}>
-            <Image
-              source={Images.search}
-              style={styles.searchImg}
-            />
-            <Text style={styles.placeholder}>Please search here...</Text>
-          </TouchableOpacity>
+            <Text style={styles.logo}>Hello, {name.split(' ').shift()}</Text>
+            <Text style={styles.cookText}>What are you cooking today?</Text>
+            <TouchableOpacity
+              activeOpacity={0.8}
+              style={styles.searchBox}
+              onPress={() => navigation.navigate(ScreenNames.Search)}>
+              <Image source={Images.search} style={styles.searchImg} />
+              <Text style={styles.placeholder}>Please search here...</Text>
+            </TouchableOpacity>
           </View>
           <Text style={styles.searchRecipe}>
             Search 1000+ recipes easily with one click
@@ -164,7 +169,8 @@ const Home = () => {
             data={recipes}
             renderItem={({item, index}) => {
               const favorite = isFavorite(item.recipe.label);
-              console.log('item.id', item.recipe.label);
+
+            
               return (
                 <View>
                   <TouchableOpacity
@@ -177,16 +183,14 @@ const Home = () => {
                     }}>
                     <View style={styles.flat}>
                       <Text style={styles.dish}>{item.recipe.label}</Text>
-                      <View
-                        style={styles.min}>
+                      <View style={styles.min}>
                         <View>
                           <Text style={styles.timeText}>Time</Text>
                           <Text>15 mins</Text>
                         </View>
                         <TouchableOpacity
                           onPress={() => handlesaveToggle(item)}>
-                          <View
-                            style={styles.saveView}>
+                          <View style={styles.saveView}>
                             <Image
                               source={
                                 favorite ? Images.active : Images.inactive
@@ -198,20 +202,30 @@ const Home = () => {
                       </View>
                     </View>
 
-                    <View
-                      style={styles.trend}>
+                    <View style={styles.trend}>
+
+                      {loadingImg && (
+                        <ActivityIndicator
+                          size="small"
+                          color={colors.main}
+                        />
+                      )}
                       <Image
-                        source={{uri: item.recipe.image}}
+                        source={{uri: item.recipe.image || ''}}
                         style={styles.trendyIcon}
                         resizeMode="cover"
+                        onLoad={() => setLoadingImg(false)}
+                        onError={() => setLoadingImg(false)}
                       />
-                      <View style={styles.review}>
+
+                      {loadingImg?null: <View style={styles.review}>
                         <Image
                           source={Images.star}
                           style={{height: 15, width: 15}}
                         />
                         <Text style={styles.point}>4.2</Text>
-                      </View>
+                      </View>}
+                      
                     </View>
                   </TouchableOpacity>
                 </View>
@@ -226,7 +240,7 @@ const Home = () => {
             horizontal
             data={NEW_RECIPE}
             renderItem={({item, index}) => {
-              console.log(item.title);
+             
               const count = item.count;
               return (
                 <TouchableOpacity activeOpacity={0.7}>
@@ -245,32 +259,18 @@ const Home = () => {
                         ))}
                       </View>
 
-                      <View
-                        style={styles.newView}>
-                        <View
-                          style={styles.innerNew}>
-                          <Image
-                            source={item.image}
-                            style={styles.newImg}
-                          />
-                          <Text style={styles.chefText}>
-                            By {item.name}
-                          </Text>
+                      <View style={styles.newView}>
+                        <View style={styles.innerNew}>
+                          <Image source={item.image} style={styles.newImg} />
+                          <Text style={styles.chefText}>By {item.name}</Text>
                         </View>
-                        <View
-                          style={styles.innerViews}>
-                          <Image
-                            source={Images.timer}
-                            style={styles.timer}
-                          />
-                          <Text style={styles.mins}>
-                            {item.time} mins
-                          </Text>
+                        <View style={styles.innerViews}>
+                          <Image source={Images.timer} style={styles.timer} />
+                          <Text style={styles.mins}>{item.time} mins</Text>
                         </View>
                       </View>
                     </View>
-                    <View
-                      style={styles.recipeImg}>
+                    <View style={styles.recipeImg}>
                       <Image
                         source={item.icon}
                         style={styles.newIcon}
@@ -289,4 +289,3 @@ const Home = () => {
 };
 
 export default Home;
-

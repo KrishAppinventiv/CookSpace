@@ -68,6 +68,7 @@ const Images = {
   bookmark: require('./images/bookmark.png'),
   delete: require('./images/delete.png'),
   privacy: require('./images/privacy.png'),
+  default: require('./images/default.png'),
 }; 
 
 export {Images};

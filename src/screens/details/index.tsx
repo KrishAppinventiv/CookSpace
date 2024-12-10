@@ -9,7 +9,7 @@ import {
   TouchableWithoutFeedback,
   Modal,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import {contains} from 'validator';
 import {Images} from '../../assets';
@@ -17,18 +17,37 @@ import {colors} from '../../theme';
 import {vh, vw} from '../../theme/dimensions';
 import {ScreenNames} from '../../navigator/screenNames';
 import styles from './styles';
+import {useDispatch, useSelector} from 'react-redux';
+import { fetchFavoritesFromFirestore , addFavoriteRecipe,removeFavoriteRecipe} from '../../redux/firebaseActions';
 
 const Details = () => {
   const route = useRoute();
   const navigation = useNavigation();
   const [selectedTab, setSelectedTab] = useState(0);
-  
+  const dispatch = useDispatch();
 
   let data;
   data = route.params?.data || {};
-  console.log(data);
 
-  
+  useEffect(() => {
+    dispatch(fetchFavoritesFromFirestore());
+  }, [dispatch]);
+
+  const favoriteItems = useSelector(
+    (state: any) => state.favorites.items || [],
+  );
+  const isFavorite = (label: string): boolean => {
+    const safeFavoriteItems = Array.isArray(favoriteItems) ? favoriteItems : [];
+    return safeFavoriteItems.some(item => item.recipe.recipe.label === label);
+  };
+  const handlesaveToggle = item => {
+    if (isFavorite(item.recipe.label)) {
+      dispatch(removeFavoriteRecipe(item));
+    } else {
+      dispatch(addFavoriteRecipe(item));
+    }
+  };
+  const favorite = isFavorite(data.recipe.label);
   return (
     <View style={styles.container}>
       <View style={styles.headDish}>
@@ -42,7 +61,6 @@ const Details = () => {
             <View style={styles.ImageView}>
               <Image source={Images.left} style={styles.back} />
             </View>
-            
           </TouchableOpacity>
           <View style={styles.timeView}>
             <View style={styles.minView}>
@@ -55,49 +73,47 @@ const Details = () => {
                 {data.recipe.cook ? data.recipe.cook : '20 min'}
               </Text>
             </View>
-
-            <View style={styles.saveView}>
-              <Image source={Images.active} style={styles.save} />
-            </View>
+            <TouchableOpacity onPress={() => handlesaveToggle(data)}>
+              <View style={styles.saveView}>
+                <Image
+                  source={favorite ? Images.active : Images.inactive}
+                  style={styles.save}
+                />
+              </View>
+            </TouchableOpacity>
           </View>
         </View>
       </View>
-
-     
 
       <View style={styles.main}>
-        <Text
-          style={styles.labelText}>
-          {data.recipe.label}
-        </Text>
-        <Text
-          style={styles.review}>
-          (13k Reviews)
-        </Text>
+        <Text style={styles.labelText}>{data.recipe.label}</Text>
+        <Text style={styles.review}>(13k Reviews)</Text>
       </View>
 
-      {data.recipe.source?<View style={styles.mainContain}>
-        <View style={styles.chefContain}>
-          <Image
-            source={Images.chefpic}
-            resizeMode="cover"
-            style={styles.chefImg}
-          />
+      {data.recipe.source ? (
+        <View style={styles.mainContain}>
+          <View style={styles.chefContain}>
+            <Image
+              source={Images.chefpic}
+              resizeMode="cover"
+              style={styles.chefImg}
+            />
 
-          <View style={styles.left}>
-            <Text style={styles.chef}>{data.recipe.source}</Text>
-            <View style={styles.locView}>
-              <Image source={Images.location} style={styles.locImg} />
-              <Text style={styles.locText}>Lagos,Nigeria</Text>
+            <View style={styles.left}>
+              <Text style={styles.chef}>{data.recipe.source}</Text>
+              <View style={styles.locView}>
+                <Image source={Images.location} style={styles.locImg} />
+                <Text style={styles.locText}>Lagos,Nigeria</Text>
+              </View>
             </View>
           </View>
-        </View>
 
-        <View style={styles.followView}>
-          <Text style={styles.followText}>Follow</Text>
+          <View style={styles.followView}>
+            <Text style={styles.followText}>Follow</Text>
+          </View>
         </View>
-      </View>:null}
-      <View>
+      ) : null}
+      <View style={{marginHorizontal:vw(20)}}>
         <FlatList
           data={[
             'Health',
@@ -140,7 +156,7 @@ const Details = () => {
           }}
         />
       </View>
-
+    
       <FlatList
         data={
           selectedTab == 0
@@ -168,19 +184,15 @@ const Details = () => {
           return (
             <View style={styles.flatView}>
               <View style={styles.ingredient}>
-                <Text
-                  style={styles.flatText}>
-                  {capitalizedItem}
-                </Text>
+                <Text style={styles.flatText}>{capitalizedItem}</Text>
               </View>
             </View>
           );
         }}
       />
+     
     </View>
   );
 };
 
 export default Details;
-
-

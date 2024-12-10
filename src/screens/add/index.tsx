@@ -31,6 +31,7 @@ import AddInputFieldButton from '../../components/AddInputFieldButton';
 import styles from './styles';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../navigator/types';
+import CustomModal from '../../components/CustomModal';
 
 type AddScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, ScreenNames.Profile>;
 const db = getFirestore();
@@ -72,16 +73,18 @@ const Add = () => {
   const cautionInputRef = useRef<TextInput>(null);
   const mealTypeInputRef = useRef<TextInput>(null);
   const cuisinesInputRef = useRef<TextInput>(null);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalMessage, setModalMessage] = useState('');
   const handleUploadFromGallery = async () => {
     launchImageLibrary({mediaType: 'photo'}, async (response: any) => {
       if (response.didCancel) {
-        console.log('User cancelled image picker');
+       
       } else if (response.error) {
-        console.log('ImagePicker Error: ', response.error);
+       
       } else {
         const imageUri = response.assets?.[0]?.uri;
         if (imageUri) {
-          console.log('Image URI: ', imageUri);
+          
           setUrl(imageUri);
           SetImgUri(true);
         }
@@ -92,7 +95,9 @@ const Add = () => {
 
     if (!label || !serve || !cook || ingredientLines.some(ingredient => ingredient.trim() === '') || !imgUri) {
       
-      Alert.alert('All fields must be filled, and an image must be selected.');
+     
+      setModalMessage('All fields must be filled, and an image must be selected.');
+      setModalVisible(true);
       return;
     }
     const recipeData = {
@@ -169,7 +174,9 @@ const Add = () => {
           postData: postData,
         });
 
-        console.log('Recipe added successfully!');
+      
+        setModalMessage('Recipe added successfully!');
+        setModalVisible(true);
         setCook('');
         setLabel('');
         setServe('');
@@ -182,9 +189,12 @@ const Add = () => {
         setIngredients(['']);
         setCautions(['']);
         SetImgUri(false);
-        navigation.navigate(ScreenNames.Profile);
+        setTimeout(() => {
+          navigation.navigate(ScreenNames.Profile);
+        }, 2000);
+       
       } catch (error) {
-        console.error('Error adding favorite recipe: ', error);
+       
       }
     }
   };
@@ -444,6 +454,12 @@ const Add = () => {
           <Button onPress={() => handleAddRecipe()} text="Add Recipe" />
         </View>
       </ScrollView>
+
+      <CustomModal
+        visible={modalVisible}
+        message={modalMessage}
+        onClose={() => setModalVisible(false)}
+      />
     </SafeAreaView>
   );
 };

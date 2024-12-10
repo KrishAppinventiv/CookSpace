@@ -11,6 +11,8 @@ import {
   updateDoc,
 } from '@react-native-firebase/firestore';
 
+
+
 const db = getFirestore();
 
 export const fetchFavoritesFromFirestore = () => async dispatch => {

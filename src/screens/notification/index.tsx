@@ -1,4 +1,5 @@
 import {
+  Alert,
   FlatList,
   Image,
   SafeAreaView,
@@ -48,7 +49,7 @@ const Notification = () => {
     status: 'read'
   }];
 
-const storeNotification = async (notification) => {
+const storeNotification = async (notification:[]) => {
   const db = getFirestore();
   if (userId) {
     try {
@@ -56,12 +57,12 @@ const storeNotification = async (notification) => {
       await updateDoc(userDocRef, {
         notifications: arrayUnion(notification),
       });
-      console.log('Notification stored successfully!');
+      
     } catch (error) {
-      console.error('Error storing notification:', error);
+     
     }
   } else {
-    console.log('User is not logged in');
+    Alert.alert('User is not logged in');
   }
 };
 
@@ -105,7 +106,7 @@ useEffect(() => {
   
   const today = new Date();
   const todayDate = today.toLocaleDateString();
-  console.log(todayDate);
+ 
   let NotificationDate = '21/11/2024';
   const yesterday = new Date();
   yesterday.setDate(today.getDate() - 1);

@@ -17,7 +17,7 @@ export default StyleSheet.create({
     marginStart: vw(20),
     fontSize: vh(16),
     fontWeight: '600',
-    color: '#235347',
+    color: 'white',
   },
   labelText: {
     fontSize: 22,
@@ -26,7 +26,7 @@ export default StyleSheet.create({
     width: '60%',
   },
   ingredient: {
-    backgroundColor: '#D9D9D9',
+    backgroundColor: '#7A9E9F',
     marginBottom: vh(10),
     justifyContent: 'center',
     paddingTop: vh(28),
@@ -194,7 +194,7 @@ export default StyleSheet.create({
     height: '100%',
   },
   typeItem: {
-    marginStart: vw(10),
+    
     marginTop: vh(25),
     paddingBottom: vh(10),
   },})

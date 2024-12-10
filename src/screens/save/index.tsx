@@ -13,13 +13,10 @@ const Save = () => {
     const [recipes, setRecipes] = useState([]);
     const [loading, setLoading] = useState(false);
     const favoriteItems = useSelector(state => state.favorites.items);
-    console.log("favourite in save----->>>",favoriteItems)
-    
     const renderItem = ({item}) => 
-      
       {
         const recipe = item.recipe; 
-        console.log("gughushu", recipe.recipe.source)
+       
         return (
         <TouchableOpacity activeOpacity={.8} onPress={() => {
           navigation.navigate(ScreenNames.Details, {
@@ -40,8 +37,6 @@ const Save = () => {
           <Text style={styles.recipeSource}>{recipe.recipe.source}</Text>
          
         </View>
-  
-        
       </View>
       </TouchableOpacity>
     );
